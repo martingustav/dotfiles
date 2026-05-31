@@ -1,0 +1,130 @@
+# Load modules
+zmodload zsh/complist
+autoload -U compinit && compinit
+autoload -U colors && colors
+
+# Completion
+zstyle ':completion:*' menu select # tab opens cmp menu
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} ma=0\;33 # colorize cmp menu
+zstyle ':completion:*' squeeze-slashes false # explicit disable to allow /*/ expansion
+
+# Options
+# Better history:
+# on exit, history appends rather than overwrites;
+# history is appended as soon as cmds executed;
+# history shared across sessions
+setopt append_history inc_append_history share_history
+setopt auto_menu menu_complete    # Autocmp first menu match
+setopt auto_param_slash           # When a dir is completed, add a / instead of a trailing space
+setopt no_case_glob no_case_match # Make cmp case insensitive
+setopt globdots                   # Include dotfiles
+setopt extended_glob              # Match ~ # ^
+setopt interactive_comments       # Allow comments in shell
+unsetopt prompt_sp                # Don't autoclean blanklines
+stty stop undef                   # Disable accidental ctrl s
+
+HISTSIZE=1000000
+SAVEHIST=1000000
+HISTFILE="$XDG_CACHE_HOME/zsh_history" # Move histfile to cache
+HISTCONTROL=ignoreboth                 # Consecutive duplicates & commands starting with space are not saved
+
+# Prompt style
+PROMPT="[%F{green}%n%F{reset_color}@%m]%F{#dea5a4}%~%F{reset_color}%# "
+
+# Delete to previous slash,
+# useful for editing paths
+autoload -U select-word-style
+select-word-style bash
+
+# Emacs keybindings
+set -o emacs
+
+# Copy to system clipboard
+wl-copy-region-as-kill () {
+  zle copy-region-as-kill
+  print -rn -- $CUTBUFFER | wl-copy --foreground
+}
+
+zle -N wl-copy-region-as-kill
+wl-kill-region () {
+  zle kill-region
+  print -rn -- $CUTBUFFER | wl-copy --foreground
+}
+
+zle -N wl-kill-region
+wl-yank () {
+  CUTBUFFER=$(wl-paste </dev/null)
+  zle yank
+}
+
+zle -N wl-yank
+
+bindkey -e '\ew' wl-copy-region-as-kill
+bindkey -e '^W' wl-kill-region
+bindkey -e '^Y' wl-yank
+
+#
+# Plugins
+#
+
+# Set up fzf keybindings and fuzzy completion
+source <(fzf --zsh)
+
+# Additional zsh completions
+fpath=($HOME/src/zsh-completions/src $fpath)
+
+#
+#  Aliases
+#
+
+# Make aliases work correctly with sudo
+alias sudo='sudo '
+
+# If user is not root, pass these commands via sudo
+if [ $UID -ne 0 ]; then
+    alias reboot="sudo reboot"
+    alias shutdown="sudo shutdown -h now"
+fi
+
+# Source zsh config
+alias sz="source $HOME/.zshrc && source $HOME/.zshenv"
+
+# Navigation
+alias ..="cd .."
+
+## Colorize the grep command output for ease of use
+alias grep='grep --color=auto'
+
+# Create parent directories if necessary,
+# and list them as they are created
+alias mkdir='mkdir -pv'
+
+# Add verbose output
+alias mv='mv -v'
+alias cp='cp -v'
+
+# Colorize diff output
+alias diff='colordiff'
+
+# Other
+alias x="exit"
+alias ls='ls -lAhv --group-directories-first --color=always'
+alias python="python3"
+
+# ssh to raspberry pi
+alias pi="ssh root@192.168.1.48"
+
+# Emacs
+alias e="emacs -nw"
+alias ec="emacsclient -c -nw"
+alias magit="emacsclient -c -nw -e '(magit-status)'"
+
+# Archives
+alias ltar="tar -ztvf"  # Lists
+alias untar="tar -zxvf" # Unpacks
+alias ctar="tar -cvzf"  # Creates
+
+# Update
+alias apt-up="sudo apt update && sudo apt upgrade -y"
+alias dnf-up="sudo dnf upgrade -y"
+alias fp-up="flatpak update -y"

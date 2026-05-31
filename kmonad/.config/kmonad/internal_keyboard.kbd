@@ -1,0 +1,58 @@
+(defcfg
+  input  (device-file "/dev/input/by-path/platform-i8042-serio-0-event-kbd")
+  output (uinput-sink "KMonad: Internal Keyboard" "sleep 1")
+  cmp-seq ralt
+  fallthrough true
+  allow-cmd true
+)
+
+(defalias
+  ;; Tap for esc, hold for ctrl
+  ec (tap-hold-next-release 200 esc lctl)
+
+  ;; Tap for a, hold for meta
+  am (tap-hold-next-release 200 a lmet)
+
+  ;; Tap for s, hold for alt
+  sa (tap-hold-next-release 200 s lalt)
+
+  ;; Tap for d, hold for right alt
+  da (tap-hold-next-release 200 d ralt)
+
+  ;; Vi layer
+  v (tap-hold-next-release 200 c (layer-toggle vi))
+)
+
+(defsrc
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p
+  caps a    s    d    f    g    h    j    k    l
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lmet lalt           spc            ralt rmet cmp  rctl
+)
+
+#|
+(deflayer empty_template
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _    _
+)
+|#
+
+(deflayer base
+  grv  1   2   3   4    5    6    7    8    9    0    -    =    bspc
+  tab  q   w   e   r    t    y    u    i    o    p
+  @ec @am @sa @da  f    g    h    j    k    l
+  lsft z   x  @v   v    b    n    m    ,    .    /    rsft
+  lctl lmet lalt           spc            ralt rmet cmp rctrl
+)
+
+(deflayer vi
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _  tab    _    _    _
+  _    _    _    _    _    _  left down  up  right
+  _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _    _
+)
