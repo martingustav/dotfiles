@@ -214,6 +214,9 @@ needed to trigger automatic refresh before calling `package-install'."
 
 (setq mouse-wheel-scroll-amount '(4))
 
+;; Scroll just enough to bring cursor back into view
+(setq scroll-conservatively 10000)
+
 ;;; Text
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -573,9 +576,6 @@ Position the cursor at its beginning, according to the current mode."
 
 ;; Consider all themes as safe
 (setq custom-safe-themes t)
-
-;; Scroll just enough to bring cursor back into view
-(setq scroll-conservatively 10000)
 
 ;; Don't render cursors in non-focused windows
 (setq-default cursor-in-non-selected-windows nil)
