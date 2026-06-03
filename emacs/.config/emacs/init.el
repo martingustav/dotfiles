@@ -217,6 +217,9 @@ needed to trigger automatic refresh before calling `package-install'."
 ;; Scroll just enough to bring cursor back into view
 (setq scroll-conservatively 10000)
 
+;; Scroll more smoothly
+(setq pixel-scroll-mode t)
+
 ;;; Text
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
