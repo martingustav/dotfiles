@@ -617,7 +617,6 @@ Position the cursor at its beginning, according to the current mode."
 
   ;; Appearance
   (setq org-tags-column 0
-	org-startup-folded t
 	org-src-preserve-indentation t
 	;; Hide file names in agenda buffer
 	org-agenda-prefix-format
