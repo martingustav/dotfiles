@@ -283,11 +283,9 @@ Position the cursor at its beginning, according to the current mode."
 (keymap-global-set "M-s r" 'rgrep)
 (keymap-global-set "M-s f" 'find-name-dired)
 
-;; Move forward to beginning of next word
-(keymap-global-set "M-F" 'forward-to-word)
-
-;; Move backward to end of previous word
-(keymap-global-set "M-B" 'backward-to-word)
+;; Use vim-like word navigation
+(global-set-key (kbd "M-f") 'viper-forward-word)
+(global-set-key (kbd "M-b") 'viper-backward-word)
 
 (keymap-global-set "M-o" 'other-window)
 
