@@ -290,6 +290,19 @@ Position the cursor at its beginning, according to the current mode."
 
 (keymap-global-set "M-o" 'other-window)
 
+;; Delete until end of previous word
+(defun backward-kill-char-or-word ()
+  (interactive)
+  (cond
+   ((looking-back (rx (char word)) 1)
+    (backward-kill-word 1))
+   ((looking-back (rx (char blank)) 1)
+    (delete-horizontal-space t))
+   (t
+    (backward-delete-char 1))))
+
+(keymap-global-set "M-DEL" 'backward-kill-char-or-word)
+
 ;;; Programming
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
