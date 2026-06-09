@@ -284,6 +284,7 @@ Position the cursor at its beginning, according to the current mode."
 (keymap-global-set "M-s f" 'find-name-dired)
 
 ;; Use vim-like word navigation
+(require 'viper-cmd)
 (global-set-key (kbd "M-f") 'viper-forward-word)
 (global-set-key (kbd "M-b") 'viper-backward-word)
 
