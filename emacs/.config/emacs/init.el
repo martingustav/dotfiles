@@ -193,6 +193,24 @@ needed to trigger automatic refresh before calling `package-install'."
 (add-hook 'server-after-make-frame-hook
 	  #'my/focus-new-client-frame)
 
+(use-package isearch
+  :ensure nil
+  :defer t
+  :config
+  ;; Spawn Occur buffer with current isearch results
+  (defun my-occur-from-isearch ()
+    (interactive)
+    (let ((query (if isearch-regexp
+	       isearch-string
+	     (regexp-quote isearch-string))))
+      (isearch-update-ring isearch-string isearch-regexp)
+      (let (search-nonincremental-instead)
+	(ignore-errors (isearch-done t t)))
+      (occur query)))
+  :bind
+  (:map isearch-mode-map
+	("C-o" . my-occur-from-isearch)))
+
 ;; Show number of matches in the minibuffer
 (setq isearch-lazy-count t)
 
