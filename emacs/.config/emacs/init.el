@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 
 (setq user-full-name "Martin"
-      user-mail-address "martin@malon.se")
+      user-mail-address "me@martingustav.se")
 
 ;;; Performance
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -350,10 +350,13 @@ Position the cursor at its beginning, according to the current mode."
 (use-package yaml-mode)
 (use-package json-mode)
 (use-package csv-mode)
-(use-package markdown-mode)
 (use-package lua-mode)
 (use-package ini-mode)
 (use-package rasi-mode)
+
+;; Treesitter auto mode
+(setq treesit-auto-install-grammar t
+      treesit-enabled-modes t)
 
 ;;; Completions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
