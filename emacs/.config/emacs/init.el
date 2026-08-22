@@ -745,7 +745,9 @@ Position the cursor at its beginning, according to the current mode."
      ((t (:height 1.3
 		   :weight bold
 		   :background unspecified
-		   :underline unspecified))))))
+		   :underline unspecified)))))
+
+  (add-hook 'org-agenda-finalize-hook (lambda () (goto-char (point-min))) 90))
 
 (use-package org-capture
   :ensure nil
