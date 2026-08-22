@@ -637,6 +637,7 @@ Position the cursor at its beginning, according to the current mode."
 	 ("C-c M-RET" . org-insert-todo-heading))
   :config
   (setq org-directory "~/notes/org"
+	org-archive-location "~/notes/org/arkiv.org"
 	org-todo-keywords '((sequence "TODO" "|" "DONE"))
 	org-M-RET-may-split-line '((default . nil))
 	org-insert-heading-respect-content t
@@ -649,11 +650,12 @@ Position the cursor at its beginning, according to the current mode."
   (setq org-default-notes-file
 	(concat org-directory "/omarkiv.org")
 	org-refile-targets
-	'(("todo.org"      :maxlevel . 2)
-	  ("rep.org"       :maxlevel . 1)
-	  ("arkiv.org"     :maxlevel . 1)
-	  ("varia.org"     :maxlevel . 1)
-	  ("kalender.org"  :level    . 0))
+	'(("todo.org"		:maxlevel . 2)
+	  ("rep.org"		:maxlevel . 1)
+	  ("arkiv.org"		:level    . 0)
+	  ("media_arkiv.org"	:maxlevel . 1)
+	  ("varia.org"		:maxlevel . 1)
+	  ("kalender.org"	:level    . 0))
 	org-refile-use-outline-path 'file
 	org-outline-path-complete-in-steps nil)
 
