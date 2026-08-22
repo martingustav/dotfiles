@@ -306,8 +306,6 @@ Position the cursor at its beginning, according to the current mode."
 (global-set-key (kbd "M-f") 'viper-forward-word)
 (global-set-key (kbd "M-b") 'viper-backward-word)
 
-(keymap-global-set "M-o" 'other-window)
-
 ;; Delete until end of previous word
 (defun backward-kill-char-or-word ()
   (interactive)
@@ -320,6 +318,16 @@ Position the cursor at its beginning, according to the current mode."
     (backward-delete-char 1))))
 
 (keymap-global-set "M-DEL" 'backward-kill-char-or-word)
+
+(keymap-global-set "M-o" 'other-window)
+
+;; Window resizing
+(keymap-global-set "C-<down>" 'enlarge-window)
+(keymap-global-set "C-<up>" 'shrink-window)
+(keymap-global-set "C-<left>" 'shrink-window-horizontally)
+(keymap-global-set "C-<right>" 'enlarge-window-horizontally)
+
+(keymap-global-set "C-x w s" 'window-swap-states)
 
 ;;; Programming
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
