@@ -785,6 +785,16 @@ Position the cursor at its beginning, according to the current mode."
   (setq org-wild-notifier-day-wide-alert-times
 	'("07:00")))
 
+(defun my/org-review-inboxes ()
+  (interactive)
+  (find-file (expand-file-name "~/notes/org/omarkiv.org"))
+  (delete-other-windows)
+  (split-window-right)
+  (find-file-other-window (expand-file-name "~/notes/org/mob_omarkiv.org"))
+  (other-window 1)
+  (beginning-of-buffer)
+  (org-next-visible-heading 1))
+
 ;;; Misc
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
