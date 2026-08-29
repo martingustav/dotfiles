@@ -190,8 +190,7 @@ needed to trigger automatic refresh before calling `package-install'."
 (defun my/focus-new-client-frame ()
   (select-frame-set-input-focus (selected-frame)))
 
-(add-hook 'server-after-make-frame-hook
-	  #'my/focus-new-client-frame)
+(add-hook 'server-after-make-frame-hook #'my/focus-new-client-frame)
 
 (use-package isearch
   :ensure nil
@@ -201,8 +200,8 @@ needed to trigger automatic refresh before calling `package-install'."
   (defun my-occur-from-isearch ()
     (interactive)
     (let ((query (if isearch-regexp
-	       isearch-string
-	     (regexp-quote isearch-string))))
+		     isearch-string
+		   (regexp-quote isearch-string))))
       (isearch-update-ring isearch-string isearch-regexp)
       (let (search-nonincremental-instead)
 	(ignore-errors (isearch-done t t)))
@@ -227,8 +226,7 @@ needed to trigger automatic refresh before calling `package-install'."
 (setq kill-do-not-save-duplicates t)
 
 ;; Hide inapplicable commands for current major mode
-(setq read-extended-command-predicate
-      #'command-completion-default-include-p)
+(setq read-extended-command-predicate #'command-completion-default-include-p)
 
 (setq mouse-wheel-scroll-amount '(4))
 
@@ -739,13 +737,13 @@ Position the cursor at its beginning, according to the current mode."
   (custom-set-faces
    '(org-agenda-date
      ((t (:height 1.0
-		   :weight bold
-		   :background unspecified))))
+		  :weight bold
+		  :background unspecified))))
    '(org-agenda-date-today
      ((t (:height 1.3
-		   :weight bold
-		   :background unspecified
-		   :underline unspecified)))))
+		  :weight bold
+		  :background unspecified
+		  :underline unspecified)))))
 
   (add-hook 'org-agenda-finalize-hook (lambda () (goto-char (point-min))) 90))
 
