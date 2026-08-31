@@ -290,14 +290,22 @@ needed to trigger automatic refresh before calling `package-install'."
 (define-key key-translation-map (kbd "C-x ,") (kbd "C-x C-;"))
 (define-key key-translation-map (kbd "C-c ,") (kbd "C-c C-,"))
 
-(defun my/smart-open-line ()
-  "Insert an empty line after the current line.
-Position the cursor at its beginning, according to the current mode."
+(defun my/insert-line-below ()
+  "Insert an empty line below the current line."
   (interactive)
-  (move-end-of-line nil)
-  (newline-and-indent))
+  (save-excursion
+    (end-of-line)
+    (open-line 1)))
 
-(keymap-global-set "S-<return>" #'my/smart-open-line)
+(defun my/insert-line-above ()
+  "Insert an empty line above the current line."
+  (interactive)
+  (save-excursion
+    (end-of-line 0)
+    (open-line 1)))
+
+(keymap-global-set "S-<return>" #'my/insert-line-below)
+(keymap-global-set "C-<return>" #'my/insert-line-above)
 
 (keymap-global-set "M-g r" 'recentf)
 
