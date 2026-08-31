@@ -346,6 +346,11 @@ needed to trigger automatic refresh before calling `package-install'."
   :config
   (casual-init))
 
+(add-hook 'outline-minor-mode-hook
+	  (lambda ()
+	    (keymap-set outline-minor-mode-map "C-c C-n" #'outline-next-visible-heading)
+	    (keymap-set outline-minor-mode-map "C-c C-p" #'outline-previous-visible-heading)))
+
 ;;; Programming
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
