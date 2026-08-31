@@ -377,16 +377,13 @@ needed to trigger automatic refresh before calling `package-install'."
   (global-git-gutter-mode))
 
 ;; Common File Types
-(use-package yaml-mode)
-(use-package json-mode)
 (use-package csv-mode)
-(use-package lua-mode)
 (use-package ini-mode)
 (use-package rasi-mode)
 
 ;; Treesitter auto mode
-(setq treesit-auto-install-grammar t
-      treesit-enabled-modes t)
+(setopt treesit-auto-install-grammar t
+	treesit-enabled-modes t)
 
 ;;; Completions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
