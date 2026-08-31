@@ -341,6 +341,11 @@ needed to trigger automatic refresh before calling `package-install'."
 
 (keymap-global-set "C-x w s" 'window-swap-states)
 
+;; Keyboard-invoked menus
+(use-package casual
+  :config
+  (casual-init))
+
 ;;; Programming
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
