@@ -236,6 +236,12 @@ needed to trigger automatic refresh before calling `package-install'."
 ;; Scroll more smoothly
 (setq pixel-scroll-mode t)
 
+(use-package markdown-ts-mode
+  :ensure nil
+  :mode ("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'")
+  :config
+  (require 'markdown-ts-mode-x))
+
 ;;; Text
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
