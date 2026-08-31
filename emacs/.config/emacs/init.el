@@ -736,7 +736,10 @@ needed to trigger automatic refresh before calling `package-install'."
 	org-agenda-skip-deadline-if-done t
 	org-agenda-skip-scheduled-if-done t
 	org-agenda-todo-list-sublevels t
-	org-agenda-files '("~/notes/org")
+	org-agenda-files
+	(seq-remove
+	 (lambda (f) (string= (file-name-nondirectory f) "arkiv.org"))
+	 (directory-files "~/notes/org" t "\\.org\\'"))
 
 	;; Time grid settings
 	org-agenda-time-grid
