@@ -511,6 +511,8 @@ needed to trigger automatic refresh before calling `package-install'."
 
 	((or . ((derived-mode . helpful-mode)))
 	 (display-buffer-reuse-mode-window)
+	 (mode . helpful-mode)
+	 (reusable-frames . visible)
 	 (dedicated . t))
 
 	;; Hide compilation windows
