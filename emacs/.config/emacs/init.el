@@ -578,11 +578,14 @@ needed to trigger automatic refresh before calling `package-install'."
   (load-theme (intern theme) t)
   (customize-save-variable 'my-chosen-theme theme))
 
-;; Remember last used theme between sessions
-(add-hook 'after-init-hook
-	  (lambda ()
-	    (if (boundp 'my-chosen-theme)
-		(my/enable-theme my-chosen-theme))))
+;; Remember last used theme between sessions,
+;; default to modus-operandi-tinted
+(defun my/restore-or-default-theme ()
+  (unless (boundp 'my-chosen-theme)
+    (setq my-chosen-theme "modus-operandi-tinted"))
+  (my/enable-theme my-chosen-theme))
+
+(add-hook 'after-init-hook #'my/restore-or-default-theme)
 
 ;; Hide minor modes in modeline
 (use-package diminish
