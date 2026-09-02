@@ -865,3 +865,8 @@ needed to trigger automatic refresh before calling `package-install'."
 ;; eval: (outline-minor-mode)
 ;; eval: (outline-hide-body)
 ;; End:
+
+;; Machine-specific overrides, not tracked in git
+(let ((local-file (expand-file-name "local.el" user-emacs-directory)))
+  (when (file-exists-p local-file)
+    (load local-file)))
