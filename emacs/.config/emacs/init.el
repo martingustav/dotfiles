@@ -373,12 +373,13 @@ needed to trigger automatic refresh before calling `package-install'."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package vertico
+  :init
+  (vertico-mode 1)
   :config
   (setq vertico-scroll-margin 0
 	vertico-count 5
 	vertico-resize t
-	vertico-cycle t)
-  (vertico-mode 1))
+	vertico-cycle t))
 
 ;; Better completion style
 (use-package orderless
@@ -408,7 +409,7 @@ needed to trigger automatic refresh before calling `package-install'."
 
 ;; Annotations for the minibuffer
 (use-package marginalia
-  :config
+  :init
   (marginalia-mode 1))
 
 ;; More detailed help buffers
