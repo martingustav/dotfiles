@@ -75,6 +75,10 @@
 	      (when buffer-file-name
 		(ignore-errors (recenter)))))
 
+;; Load user-lisp manually if on Emacs older than version 31.1
+(when (version< emacs-version "31.1")
+  (add-to-list 'load-path (expand-file-name "user-lisp" user-emacs-directory)))
+
 ;;; Package Management
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
