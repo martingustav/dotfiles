@@ -140,6 +140,11 @@ needed to trigger automatic refresh before calling `package-install'."
    'package-last-refresh-date
    (format-time-string "%Y-%m-%dT%H:%M")))
 
+;; Machine-specific overrides, not tracked in git
+(let ((local-file (expand-file-name "local.el" user-emacs-directory)))
+  (when (file-exists-p local-file)
+    (load local-file)))
+
 ;;; System Integration
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -398,14 +403,20 @@ needed to trigger automatic refresh before calling `package-install'."
 	vertico-resize t
 	vertico-cycle t))
 
-;; Better completion style
+;; Better completion style.
+;; :demand + moving the vars into :config (rather than :custom) means
+;; completion-styles only ever gets set to include `orderless' once
+;; the package has actually loaded and registered itself in
+;; completion-styles-alist; otherwise every minibuffer completion
+;; command in Emacs would error with "Invalid completion style".
 (use-package orderless
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides
-   '((file (styles partial-completion))))
-  (completion-category-defaults nil)
-  (completion-pcm-leading-wildcard t))
+  :demand t
+  :config
+  (setq completion-styles '(orderless basic)
+	completion-category-overrides
+	'((file (styles partial-completion)))
+	completion-category-defaults nil
+	completion-pcm-leading-wildcard t))
 
 ;; Completions
 (use-package corfu
@@ -669,7 +680,7 @@ needed to trigger automatic refresh before calling `package-install'."
 	 ("C-c M-RET" . org-insert-todo-heading))
   :config
   ;; org-directory defaults to the personal notes dir, but local.el
-  ;; (loaded at the end of this file, before org is ever required)
+  ;; (loaded early in this file, well before org is ever required)
   ;; can set `my/work-org-directory' to point somewhere else on a
   ;; given machine, e.g. a work-only notes folder.
   (setq org-directory (or (bound-and-true-p my/work-org-directory)
@@ -903,8 +914,3 @@ needed to trigger automatic refresh before calling `package-install'."
 ;; eval: (outline-minor-mode)
 ;; eval: (outline-hide-body)
 ;; End:
-
-;; Machine-specific overrides, not tracked in git
-(let ((local-file (expand-file-name "local.el" user-emacs-directory)))
-  (when (file-exists-p local-file)
-    (load local-file)))
