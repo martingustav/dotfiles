@@ -685,7 +685,7 @@ needed to trigger automatic refresh before calling `package-install'."
   ;; given machine, e.g. a work-only notes folder.
   (setq org-directory (or (bound-and-true-p my/work-org-directory)
 			   "~/notes/org")
-	org-archive-location (concat org-directory "/arkiv.org")
+	org-archive-location (concat org-directory "/arkiv.org::")
 	org-todo-keywords '((sequence "TODO" "|" "DONE"))
 	org-M-RET-may-split-line '((default . nil))
 	org-insert-heading-respect-content t
