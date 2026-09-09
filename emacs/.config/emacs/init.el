@@ -144,15 +144,21 @@ needed to trigger automatic refresh before calling `package-install'."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Set default browser
-(setq browse-url-browser-function 'browse-url-generic
-      browse-url-generic-program "firefox")
+(if (eq system-type 'windows-nt)
+    ;; Use the OS-registered default browser on Windows instead of
+    ;; assuming firefox is on PATH
+    (setq browse-url-browser-function 'browse-url-default-windows-browser)
+  (setq browse-url-browser-function 'browse-url-generic
+	browse-url-generic-program "firefox"))
 
 ;; Use Emacs minibuffer for GPG pinentry
 (setq epa-pinentry-mode 'loopback
       epg-pinentry-mode 'loopback)
 
-;; Set default alert style to send desktop notifications
-(setq alert-default-style 'libnotify)
+;; Set default alert style to send desktop notifications.
+;; libnotify is Linux-only; fall back to a plain message on Windows.
+(setq alert-default-style
+      (if (eq system-type 'windows-nt) 'message 'libnotify))
 
 ;; Copy to system clipboard in terminal
 (use-package clipetty
@@ -269,7 +275,11 @@ needed to trigger automatic refresh before calling `package-install'."
   ;; ispell-set-spellchecker-params has to be called
   ;; before ispell-hunspell-add-multi-dic will work
   (ispell-set-spellchecker-params)
-  (ispell-hunspell-add-multi-dic "sv_SE,en_US"))
+  ;; On a fresh machine (e.g. Windows, before hunspell + dictionaries
+  ;; are installed and DICPATH is set) this would otherwise error on
+  ;; every startup, so fail quietly instead.
+  (ignore-errors
+    (ispell-hunspell-add-multi-dic "sv_SE,en_US")))
 
 (setq rectangle-preview t)
 
@@ -555,9 +565,13 @@ needed to trigger automatic refresh before calling `package-install'."
 		org-mode-hook))
   (add-hook hook 'display-line-numbers-mode))
 
-;; Set font
-(let ((mono-spaced-font "monospace")
-      (proportionately-spaced-font "sans"))
+;; Set font.
+;; "monospace"/"sans" are fontconfig aliases that only resolve on
+;; Linux; Windows needs real installed font family names instead.
+(let ((mono-spaced-font
+       (if (eq system-type 'windows-nt) "Cascadia Code" "monospace"))
+      (proportionately-spaced-font
+       (if (eq system-type 'windows-nt) "Segoe UI" "sans")))
   (set-face-attribute 'default nil
 		      :family mono-spaced-font
 		      :height 115)
@@ -654,8 +668,13 @@ needed to trigger automatic refresh before calling `package-install'."
 	 ("C-c l"     . org-store-link)
 	 ("C-c M-RET" . org-insert-todo-heading))
   :config
-  (setq org-directory "~/notes/org"
-	org-archive-location "~/notes/org/arkiv.org"
+  ;; org-directory defaults to the personal notes dir, but local.el
+  ;; (loaded at the end of this file, before org is ever required)
+  ;; can set `my/work-org-directory' to point somewhere else on a
+  ;; given machine, e.g. a work-only notes folder.
+  (setq org-directory (or (bound-and-true-p my/work-org-directory)
+			   "~/notes/org")
+	org-archive-location (concat org-directory "/arkiv.org")
 	org-todo-keywords '((sequence "TODO" "|" "DONE"))
 	org-M-RET-may-split-line '((default . nil))
 	org-insert-heading-respect-content t
@@ -738,7 +757,7 @@ needed to trigger automatic refresh before calling `package-install'."
 	org-agenda-files
 	(seq-remove
 	 (lambda (f) (string= (file-name-nondirectory f) "arkiv.org"))
-	 (directory-files "~/notes/org" t "\\.org\\'"))
+	 (directory-files org-directory t "\\.org\\'"))
 
 	;; Time grid settings
 	org-agenda-time-grid
@@ -798,7 +817,7 @@ needed to trigger automatic refresh before calling `package-install'."
   :after org
   :pin melpa
   :custom
-  (org-contacts-files '("~/notes/org/kontakter.org")))
+  (org-contacts-files (list (expand-file-name "kontakter.org" org-directory))))
 
 (use-package org-wild-notifier
   :config
@@ -808,10 +827,10 @@ needed to trigger automatic refresh before calling `package-install'."
 
 (defun my/org-review-inboxes ()
   (interactive)
-  (find-file (expand-file-name "~/notes/org/omarkiv.org"))
+  (find-file (expand-file-name "omarkiv.org" org-directory))
   (delete-other-windows)
   (split-window-right)
-  (find-file-other-window (expand-file-name "~/notes/org/mob_omarkiv.org"))
+  (find-file-other-window (expand-file-name "mob_omarkiv.org" org-directory))
   (other-window 1)
   (beginning-of-buffer)
   (org-next-visible-heading 1))
@@ -819,7 +838,10 @@ needed to trigger automatic refresh before calling `package-install'."
 ;;; Misc
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; vterm needs a compiled native module (cmake/libtool/a C toolchain)
+;; that's a pain to set up on Windows, so it's skipped there entirely.
 (use-package vterm
+  :if (not (eq system-type 'windows-nt))
   :custom
   (term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
   (vterm-shell "zsh")
@@ -827,11 +849,16 @@ needed to trigger automatic refresh before calling `package-install'."
 
 ;; Open multiple vterm buffers
 (use-package multi-vterm
+  :if (not (eq system-type 'windows-nt))
   :bind
   ("C-c T" . multi-vterm-dedicated-toggle)
   ("C-c t" . multi-vterm)
   :config
   (setq multi-vterm-dedicated-window-height-percent 30))
+
+;; Fall back to eshell on the same keybinding where vterm is unavailable
+(when (eq system-type 'windows-nt)
+  (keymap-global-set "C-c t" #'eshell))
 
 (use-package dired
   :ensure nil
