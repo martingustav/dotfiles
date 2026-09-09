@@ -254,8 +254,7 @@ needed to trigger automatic refresh before calling `package-install'."
 	(require 'markdown-ts-mode-x))
       (dolist (pat '("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'"))
 	(add-to-list 'auto-mode-alist (cons pat 'markdown-ts-mode))))
-  (use-package md-ts-mode
-    :mode ("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'")))
+  (use-package markdown-mode))
 
 ;;; Text
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -824,14 +823,12 @@ needed to trigger automatic refresh before calling `package-install'."
      ("c" "Contact" entry (file "kontakter.org")
       "* %? \n:PROPERTIES:\n:PHONE: %^{Phone number}\n:END:"))))
 
-(use-package org-contacts
-  ;; my/disable-org-contacts skips installing/loading
-  ;; org-contacts at all on machines that don't use it.
-  :if (not (bound-and-true-p my/disable-org-contacts))
-  :after org
-  :pin melpa
-  :custom
-  (org-contacts-files (list (expand-file-name "kontakter.org" org-directory))))
+(unless (bound-and-true-p my/disable-org-contacts)
+  (use-package org-contacts
+    :after org
+    :pin melpa
+    :custom
+    (org-contacts-files (list (expand-file-name "kontakter.org" org-directory)))))
 
 (use-package org-wild-notifier
   :config
@@ -854,23 +851,26 @@ needed to trigger automatic refresh before calling `package-install'."
 
 ;; vterm needs a compiled native module (cmake/libtool/a C toolchain)
 ;; that's a pain to set up on Windows, so it's skipped there entirely.
-(use-package vterm
-  :if (not (eq system-type 'windows-nt))
-  :custom
-  (term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
-  (vterm-shell "zsh")
-  (vterm-max-scrollback 10000))
+;; Wrapping in `unless' rather than relying on :if/:ensure keyword
+;; semantics, since :ensure doesn't accept an arbitrary expression and
+;; :if alone doesn't reliably prevent package-install from running.
+(unless (eq system-type 'windows-nt)
+  (use-package vterm
+    :custom
+    (term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
+    (vterm-shell "zsh")
+    (vterm-max-scrollback 10000))
 
-;; Open multiple vterm buffers
-(use-package multi-vterm
-  :if (not (eq system-type 'windows-nt))
-  :bind
-  ("C-c T" . multi-vterm-dedicated-toggle)
-  ("C-c t" . multi-vterm)
-  :config
-  (setq multi-vterm-dedicated-window-height-percent 30))
+  ;; Open multiple vterm buffers
+  (use-package multi-vterm
+    :bind
+    ("C-c T" . multi-vterm-dedicated-toggle)
+    ("C-c t" . multi-vterm)
+    :config
+    (setq multi-vterm-dedicated-window-height-percent 30)))
 
-;; Fall back to eshell on the same keybinding where vterm is unavailable
+;; Fall back to eshell on the same keybinding where vterm is
+;; unavailable
 (when (eq system-type 'windows-nt)
   (keymap-global-set "C-c t" #'eshell))
 
