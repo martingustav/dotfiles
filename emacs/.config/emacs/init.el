@@ -825,6 +825,9 @@ needed to trigger automatic refresh before calling `package-install'."
       "* %? \n:PROPERTIES:\n:PHONE: %^{Phone number}\n:END:"))))
 
 (use-package org-contacts
+  ;; my/disable-org-contacts skips installing/loading
+  ;; org-contacts at all on machines that don't use it.
+  :if (not (bound-and-true-p my/disable-org-contacts))
   :after org
   :pin melpa
   :custom
