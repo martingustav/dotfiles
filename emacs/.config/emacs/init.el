@@ -140,6 +140,10 @@ needed to trigger automatic refresh before calling `package-install'."
    'package-last-refresh-date
    (format-time-string "%Y-%m-%dT%H:%M")))
 
+;; Allow ELPA installs to shadow/upgrade a bundled built-in package
+;; when a newer version is needed
+(setq package-install-upgrade-built-in t)
+
 ;; Machine-specific overrides, not tracked in git
 (let ((local-file (expand-file-name "local.el" user-emacs-directory)))
   (when (file-exists-p local-file)
