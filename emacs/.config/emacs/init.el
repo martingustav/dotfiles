@@ -468,7 +468,7 @@ needed to trigger automatic refresh before calling `package-install'."
 	      ("q" . (lambda ()
 		       (interactive)
 		       (quit-window))))
-  :config
+  :init
   ;; Note that the built-in `describe-function' includes both functions
   ;; and macros. `helpful-function' is functions only, so we provide
   ;; `helpful-callable' as a drop-in replacement.
