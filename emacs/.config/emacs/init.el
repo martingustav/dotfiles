@@ -741,7 +741,7 @@ needed to trigger automatic refresh before calling `package-install'."
 	org-ellipsis " ▾"
 	;; Empty line before headings
 	org-blank-before-new-entry
-	'((heading . auto)
+	'((heading . t)
 	  (plain-list-item . nil)))
 
   ;; Make only first org heading be bold
