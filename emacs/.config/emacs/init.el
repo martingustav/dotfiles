@@ -411,7 +411,9 @@ needed to trigger automatic refresh before calling `package-install'."
 
 ;; Treesitter auto mode
 (setopt treesit-auto-install-grammar t
-	treesit-enabled-modes t)
+	treesit-enabled-modes t
+	treesit-language-source-alist
+	'((yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
 ;;; Completions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
