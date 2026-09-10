@@ -260,6 +260,25 @@ needed to trigger automatic refresh before calling `package-install'."
 	(add-to-list 'auto-mode-alist (cons pat 'markdown-ts-mode))))
   (use-package markdown-mode))
 
+(defun my/fit-frame-to-monitor (&optional frame)
+  "Resize and center FRAME so it fits entirely within its monitor's work area."
+  (let* ((frame (or frame (selected-frame)))
+	 (workarea (alist-get 'workarea (frame-monitor-attributes frame)))
+	 (mon-x (nth 0 workarea))
+	 (mon-y (nth 1 workarea))
+	 (mon-width (nth 2 workarea))
+	 (mon-height (nth 3 workarea))
+	 ;; Leave a margin so the frame doesn't touch the screen edges
+	 (target-width (round (* mon-width 0.85)))
+	 (target-height (round (* mon-height 0.85))))
+    (set-frame-size frame target-width target-height t)
+    (set-frame-position frame
+			 (+ mon-x (/ (- mon-width target-width) 2))
+			 (+ mon-y (/ (- mon-height target-height) 2)))))
+
+(add-hook 'after-make-frame-functions #'my/fit-frame-to-monitor)
+(add-hook 'window-setup-hook #'my/fit-frame-to-monitor)
+
 ;;; Text
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
