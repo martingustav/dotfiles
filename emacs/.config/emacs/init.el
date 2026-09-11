@@ -832,21 +832,26 @@ needed to trigger automatic refresh before calling `package-install'."
   (setq org-bookmark-names-plist nil
 	org-capture-bookmark nil)
   :custom
+  ;; my/org-capture-inbox-file lets local.el redirect where Task/Note
+  ;; captures land on a given machine (e.g. straight to todo.org
+  ;; instead of the personal omarkiv.org inbox).
   (org-capture-templates
-   '(("t" "Task" entry (file "")
-      "* TODO %?\n%i\n")
+   (let ((inbox (or (bound-and-true-p my/org-capture-inbox-file) "omarkiv.org")))
+     (append
+      `(("t" "Task" entry (file ,inbox)
+	 "* TODO %?\n%i\n")
 
-     ("l" "Task with link" entry (file "")
-      "* TODO %?\n%i\n%a")
+	("l" "Task with link" entry (file ,inbox)
+	 "* TODO %?\n%i\n%a")
 
-     ("n" "Note" entry (file "")
-      "* %?\n%i\n")
+	("n" "Note" entry (file ,inbox)
+	 "* %?\n%i\n")
 
-     ("e" "Calendar event" entry (file "kalender.org")
-      "* %?\n%^t")
-
-     ("c" "Contact" entry (file "kontakter.org")
-      "* %? \n:PROPERTIES:\n:PHONE: %^{Phone number}\n:END:"))))
+	("e" "Calendar event" entry (file "kalender.org")
+	 "* %?\n%^t"))
+      (unless (bound-and-true-p my/disable-org-contacts)
+	'(("c" "Contact" entry (file "kontakter.org")
+	   "* %? \n:PROPERTIES:\n:PHONE: %^{Phone number}\n:END:")))))))
 
 (unless (bound-and-true-p my/disable-org-contacts)
   (use-package org-contacts
