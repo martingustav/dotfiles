@@ -254,10 +254,13 @@ needed to trigger automatic refresh before calling `package-install'."
 
 (if (version<= "31.1" emacs-version)
     (progn
+      (autoload 'markdown-ts-mode "markdown-ts-mode" nil t)
+
+      (dolist (re '("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'"))
+	(add-to-list 'auto-mode-alist (cons re 'markdown-ts-mode)))
+
       (with-eval-after-load 'markdown-ts-mode
-	(require 'markdown-ts-mode-x))
-      (dolist (pat '("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'"))
-	(add-to-list 'auto-mode-alist (cons pat 'markdown-ts-mode))))
+	(require 'markdown-ts-mode-x)))
   (use-package markdown-mode))
 
 (defun my/fit-frame-to-monitor (&optional frame)
