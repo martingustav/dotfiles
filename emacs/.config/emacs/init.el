@@ -413,7 +413,7 @@ needed to trigger automatic refresh before calling `package-install'."
 (use-package rasi-mode)
 
 ;; Treesitter auto mode
-(setopt treesit-auto-install-grammar t
+(setopt treesit-auto-install-grammar 'always
 	treesit-enabled-modes t
 	treesit-language-source-alist
 	'((yaml "https://github.com/ikatyang/tree-sitter-yaml")))
