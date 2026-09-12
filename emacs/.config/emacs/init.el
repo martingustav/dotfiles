@@ -276,8 +276,8 @@ needed to trigger automatic refresh before calling `package-install'."
 	 (target-height (round (* mon-height 0.65))))
     (set-frame-size frame target-width target-height t)
     (set-frame-position frame
-			 (+ mon-x (/ (- mon-width target-width) 2))
-			 (+ mon-y (/ (- mon-height target-height) 2)))))
+			(+ mon-x (/ (- mon-width target-width) 2))
+			(+ mon-y (/ (- mon-height target-height) 2)))))
 
 (add-hook 'after-make-frame-functions #'my/fit-frame-to-monitor)
 (add-hook 'window-setup-hook #'my/fit-frame-to-monitor)
