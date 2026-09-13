@@ -743,7 +743,8 @@ needed to trigger automatic refresh before calling `package-install'."
 	;; Empty line before headings
 	org-blank-before-new-entry
 	'((heading . t)
-	  (plain-list-item . nil)))
+	  (plain-list-item . nil))
+	org-startup-folded "content")
 
   ;; Make only first org heading be bold
   (custom-set-faces
