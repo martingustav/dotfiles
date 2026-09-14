@@ -371,7 +371,9 @@ needed to trigger automatic refresh before calling `package-install'."
 ;; Keyboard-invoked menus
 (use-package casual
   :config
-  (casual-init))
+  (casual-init)
+  (setq casual-keybinding-primary "C-c o"
+	casual-keybinding-secondary "C-c m"))
 
 (add-hook 'outline-minor-mode-hook
 	  (lambda ()
