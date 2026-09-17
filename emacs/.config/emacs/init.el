@@ -240,16 +240,6 @@ needed to trigger automatic refresh before calling `package-install'."
 ;; Hide inapplicable commands for current major mode
 (setq read-extended-command-predicate #'command-completion-default-include-p)
 
-(if (version<= "31.1" emacs-version)
-    (progn
-      (autoload 'markdown-ts-mode "markdown-ts-mode" nil t)
-
-      (dolist (re '("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'"))
-	(add-to-list 'auto-mode-alist (cons re 'markdown-ts-mode)))
-
-      (with-eval-after-load 'markdown-ts-mode
-	(require 'markdown-ts-mode-x)))
-  (use-package markdown-mode))
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)) ; Scroll line by line
       mouse-wheel-progressive-speed t              ; Keep scroll speed constant
       scroll-conservatively 10                     ; Scroll smoothly near borders
@@ -406,11 +396,62 @@ needed to trigger automatic refresh before calling `package-install'."
 (use-package ini-mode)
 (use-package rasi-mode)
 
-;; Treesitter auto mode
-(setopt treesit-auto-install-grammar 'always
-	treesit-enabled-modes t
-	treesit-language-source-alist
-	'((yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+;; Markdown
+(if (version<= "31.1" emacs-version)
+    (progn
+      (with-eval-after-load 'markdown-ts-mode
+	(require 'markdown-ts-mode-x))
+      (dolist (pat '("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'"))
+	(add-to-list 'auto-mode-alist (cons pat 'markdown-ts-mode))))
+  (use-package markdown-mode))
+
+;; Treesitter
+(if (version<= "31.1" emacs-version)
+    (setopt treesit-auto-install-grammar 'always
+	    treesit-enabled-modes t
+	    treesit-language-source-alist
+	    '((yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+  ;; Emacs < 31 doesn't have the built-in auto-mode-remap/grammar-install
+  ;; machinery, so wire up each ts-mode manually: register the grammar
+  ;; source, map the file extension(s), and install the grammar on
+  ;; first load if it isn't already present.
+  (setq treesit-language-source-alist
+	'((bash       "https://github.com/tree-sitter/tree-sitter-bash")
+	  (c          "https://github.com/tree-sitter/tree-sitter-c")
+	  (cpp        "https://github.com/tree-sitter/tree-sitter-cpp")
+	  (css        "https://github.com/tree-sitter/tree-sitter-css")
+	  (html       "https://github.com/tree-sitter/tree-sitter-html")
+	  (java       "https://github.com/tree-sitter/tree-sitter-java")
+	  (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
+	  (json       "https://github.com/tree-sitter/tree-sitter-json")
+	  (python     "https://github.com/tree-sitter/tree-sitter-python")
+	  (ruby       "https://github.com/tree-sitter/tree-sitter-ruby")
+	  (tsx        "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+	  (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+	  (yaml       "https://github.com/ikatyang/tree-sitter-yaml")))
+
+  (dolist (mapping '(("\\.sh\\'"          . bash-ts-mode)
+		     ("\\.c\\'"           . c-ts-mode)
+		     ("\\.h\\'"           . c-ts-mode)
+		     ("\\.cpp\\'"         . c++-ts-mode)
+		     ("\\.cc\\'"          . c++-ts-mode)
+		     ("\\.hpp\\'"         . c++-ts-mode)
+		     ("\\.css\\'"         . css-ts-mode)
+		     ("\\.html?\\'"       . html-ts-mode)
+		     ("\\.java\\'"        . java-ts-mode)
+		     ("\\.[cm]?js\\'"     . js-ts-mode)
+		     ("\\.json\\'"        . json-ts-mode)
+		     ("\\.py[iw]?\\'"     . python-ts-mode)
+		     ("\\.rb\\'"          . ruby-ts-mode)
+		     ("\\.tsx\\'"         . tsx-ts-mode)
+		     ("\\.ts\\'"          . typescript-ts-mode)
+		     ("\\.ya?ml\\'"       . yaml-ts-mode)))
+    (add-to-list 'auto-mode-alist mapping))
+
+  (dolist (lang '(bash c cpp css html java javascript json
+		       python ruby tsx typescript yaml))
+    (unless (treesit-language-available-p lang)
+      (treesit-install-language-grammar lang))))
 
 ;;; Completions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
