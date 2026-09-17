@@ -240,14 +240,6 @@ needed to trigger automatic refresh before calling `package-install'."
 ;; Hide inapplicable commands for current major mode
 (setq read-extended-command-predicate #'command-completion-default-include-p)
 
-(setq mouse-wheel-scroll-amount '(4))
-
-;; Scroll just enough to bring cursor back into view
-(setq scroll-conservatively 10000)
-
-;; Scroll more smoothly
-(setq pixel-scroll-mode t)
-
 (if (version<= "31.1" emacs-version)
     (progn
       (autoload 'markdown-ts-mode "markdown-ts-mode" nil t)
@@ -258,6 +250,10 @@ needed to trigger automatic refresh before calling `package-install'."
       (with-eval-after-load 'markdown-ts-mode
 	(require 'markdown-ts-mode-x)))
   (use-package markdown-mode))
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1)) ; Scroll line by line
+      mouse-wheel-progressive-speed t              ; Keep scroll speed constant
+      scroll-conservatively 10                     ; Scroll smoothly near borders
+      scroll-margin 5)                             ; Keep lines visible at edges
 
 (defun my/fit-frame-to-monitor (&optional frame)
   "Resize and center FRAME so it fits entirely within its monitor's work area."
