@@ -409,29 +409,11 @@ needed to trigger automatic refresh before calling `package-install'."
 (use-package markdown-toc)
 
 ;; Treesitter
-(if (version<= "31.1" emacs-version)
+(when (version<= "31.1" emacs-version)
     (setopt treesit-auto-install-grammar 'always
 	    treesit-enabled-modes t
 	    treesit-language-source-alist
 	    '((yaml "https://github.com/ikatyang/tree-sitter-yaml")))
-  ;; Emacs < 31 doesn't have the built-in auto-mode-remap/grammar-install
-  ;; machinery, so wire up each ts-mode manually: register the grammar
-  ;; source, map the file extension(s), and install the grammar on
-  ;; first load if it isn't already present.
-  (setq treesit-language-source-alist
-	'((bash       "https://github.com/tree-sitter/tree-sitter-bash")
-	  (c          "https://github.com/tree-sitter/tree-sitter-c")
-	  (cpp        "https://github.com/tree-sitter/tree-sitter-cpp")
-	  (css        "https://github.com/tree-sitter/tree-sitter-css")
-	  (html       "https://github.com/tree-sitter/tree-sitter-html")
-	  (java       "https://github.com/tree-sitter/tree-sitter-java")
-	  (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
-	  (json       "https://github.com/tree-sitter/tree-sitter-json")
-	  (python     "https://github.com/tree-sitter/tree-sitter-python")
-	  (ruby       "https://github.com/tree-sitter/tree-sitter-ruby")
-	  (tsx        "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-	  (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-	  (yaml       "https://github.com/ikatyang/tree-sitter-yaml")))
 
   (dolist (mapping '(("\\.sh\\'"          . bash-ts-mode)
 		     ("\\.c\\'"           . c-ts-mode)
