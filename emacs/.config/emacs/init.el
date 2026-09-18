@@ -405,6 +405,9 @@ needed to trigger automatic refresh before calling `package-install'."
 	(add-to-list 'auto-mode-alist (cons pat 'markdown-ts-mode))))
   (use-package markdown-mode))
 
+;; Generate a table of contents for markdown files
+(use-package markdown-toc)
+
 ;; Treesitter
 (if (version<= "31.1" emacs-version)
     (setopt treesit-auto-install-grammar 'always
