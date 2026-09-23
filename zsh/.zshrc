@@ -129,3 +129,5 @@ alias apt-up="sudo apt update && sudo apt upgrade -y"
 alias dnf-up="sudo dnf upgrade -y"
 alias fp-up="flatpak update -y"
 alias all-up="sudo dnf upgrade -y && flatpak update -y"
+
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
