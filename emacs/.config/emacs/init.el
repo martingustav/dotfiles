@@ -540,8 +540,16 @@ needed to trigger automatic refresh before calling `package-install'."
 ;; Don't open a new window for ediff
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
-;; Open man pages in other window
-(setq Man-notify-method 'aggressive)
+;; Reuse man page windows
+(setq Man-notify-method 'thrifty)
+
+(define-advice Man-notify-when-ready (:after (man-buffer) select-window)
+  "Select the window MAN-BUFFER ends up in, regardless of Man-notify-method's
+own selection behavior (`thrifty' deliberately doesn't select)."
+  (when (eq Man-notify-method 'thrifty)
+    (let ((win (get-buffer-window man-buffer t)))
+      (when win
+	(select-window win)))))
 
 ;; Auto focus help-mode windows
 (setq help-window-select t)
@@ -567,11 +575,14 @@ needed to trigger automatic refresh before calling `package-install'."
 
 ;; Settings for displaying buffers
 (setq display-buffer-alist
-      '(((or . ((derived-mode . occur-mode)))
+      '(((or . ((derived-mode . helpful-mode)
+		(derived-mode . Man-mode)
+		(derived-mode . occur-mode)))
 	 (display-buffer-reuse-mode-window
 	  display-buffer-at-bottom)
+	 (mode . (helpful-mode Man-mode occur-mode))
 	 (body-function . my/select-window)
-	 (dedicated . t)
+	 (reusable-frames . visible)
 	 (preserve-size . (t . t)))
 
 	((or . ((derived-mode . compilation-mode)))
@@ -581,12 +592,6 @@ needed to trigger automatic refresh before calling `package-install'."
 	 (dedicated . t)
 	 (inhibit-same-window . nil)
 	 (preserve-size . (t . t)))
-
-	((or . ((derived-mode . helpful-mode)))
-	 (display-buffer-reuse-mode-window)
-	 (mode . helpful-mode)
-	 (reusable-frames . visible)
-	 (dedicated . t))
 
 	;; Hide compilation windows
 	("\\*compilation\\*" display-buffer-no-window
@@ -620,7 +625,7 @@ needed to trigger automatic refresh before calling `package-install'."
 		org-mode-hook))
   (add-hook hook 'display-line-numbers-mode))
 
-;; Set font.
+;; Set font
 ;; "monospace"/"sans" are fontconfig aliases that only resolve on
 ;; Linux; Windows needs real installed font family names instead.
 (let ((mono-spaced-font
