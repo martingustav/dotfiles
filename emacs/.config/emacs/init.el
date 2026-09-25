@@ -397,8 +397,9 @@ needed to trigger automatic refresh before calling `package-install'."
 (use-package rasi-mode)
 
 ;; Markdown
-(if (version<= "31.1" emacs-version)
+(if (locate-library "markdown-ts-mode")
     (progn
+      (require 'markdown-ts-mode)
       (with-eval-after-load 'markdown-ts-mode
 	(require 'markdown-ts-mode-x))
       (dolist (pat '("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'"))
