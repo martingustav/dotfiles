@@ -428,11 +428,12 @@ needed to trigger automatic refresh before calling `package-install'."
 		     ("\\.[cm]?js\\'"     . js-ts-mode)
 		     ("\\.json\\'"        . json-ts-mode)
 		     ("\\.py[iw]?\\'"     . python-ts-mode)
-		     ("\\.ya?ml\\'"       . yaml-ts-mode)))
+		     ("\\.ya?ml\\'"       . yaml-ts-mode)
+		     ("\\.tsx\\'"         . typescript-ts-mode)))
     (add-to-list 'auto-mode-alist mapping))
 
   (dolist (lang '(bash c cpp css html java javascript json
-		       python yaml))
+		       python yaml typescript))
     (unless (treesit-language-available-p lang)
       (treesit-install-language-grammar lang))))
 
