@@ -3,6 +3,36 @@
 (setq user-full-name "Martin"
       user-mail-address "me@martingustav.se")
 
+;;; Safeguards
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defvar my/init-errors nil
+  "List of (LABEL . ERROR) for init steps that failed.")
+
+(defmacro my/safely (label &rest body)
+  "Run BODY. On error, record it under LABEL and carry on (returns nil)."
+  (declare (indent 1))
+  (let ((e (make-symbol "err")))
+    `(condition-case ,e
+	 (progn ,@body)
+       (error
+	(push (cons ,label ,e) my/init-errors)
+	(message "[init] %s failed: %s" ,label (error-message-string ,e))
+	nil))))
+
+;; Show a single warning at startup listing everything that failed
+(add-hook 'emacs-startup-hook
+	  (lambda ()
+	    (when my/init-errors
+	      (display-warning
+	       'init
+	       (concat (format "%d init step(s) failed:\n" (length my/init-errors))
+		       (mapconcat (lambda (e)
+				    (format "  - %s: %s" (car e)
+					    (error-message-string (cdr e))))
+				  (reverse my/init-errors) "\n"))
+	       :warning))))
+
 ;;; Performance
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -41,8 +71,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Make customize-based setting live in the custom.el file
+;; ('noerror only covers a missing file, not errors inside it)
 (setq custom-file "~/.config/emacs/custom.el")
-(load custom-file 'noerror)
+(my/safely "custom.el"
+  (load custom-file 'noerror))
 
 ;; Set backup, autosave and lockfiles
 ;; to live in /tmp
@@ -92,7 +124,8 @@
 	("nongnu-devel" . "https://elpa.nongnu.org/nongnu-devel/")))
 
 ;; Initialize the package manager
-(package-initialize)
+(my/safely "package-initialize"
+  (package-initialize))
 
 (setq use-package-always-ensure t
       use-package-verbose t)
@@ -125,25 +158,29 @@ needed to trigger automatic refresh before calling `package-install'."
   :type 'number
   :group 'package)
 
+;; Wrapped so that being offline doesn't block every package-install
 (define-advice package-install (:before (&rest _) package-refresh-contents-maybe)
-  (when (or (null package-last-refresh-date)
-	    (> (/ (float-time
-		   (time-subtract
-		    (date-to-time (format-time-string "%Y-%m-%dT%H:%M"))
-		    (date-to-time package-last-refresh-date)))
-		  3600)
-	       package-automatic-refresh-threshold))
-    (package-refresh-contents)))
+  (my/safely "package-refresh-contents (auto)"
+    (when (or (null package-last-refresh-date)
+	      (> (/ (float-time
+		     (time-subtract
+		      (date-to-time (format-time-string "%Y-%m-%dT%H:%M"))
+		      (date-to-time package-last-refresh-date)))
+		    3600)
+		 package-automatic-refresh-threshold))
+      (package-refresh-contents))))
 
 (define-advice package-refresh-contents (:after (&rest _) update-package-refresh-date)
-  (customize-save-variable
-   'package-last-refresh-date
-   (format-time-string "%Y-%m-%dT%H:%M")))
+  (my/safely "save package-last-refresh-date"
+    (customize-save-variable
+     'package-last-refresh-date
+     (format-time-string "%Y-%m-%dT%H:%M"))))
 
 ;; Machine-specific overrides, not tracked in git
 (let ((local-file (expand-file-name "local.el" user-emacs-directory)))
   (when (file-exists-p local-file)
-    (load local-file)))
+    (my/safely "local.el"
+      (load local-file))))
 
 ;;; System Integration
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -247,19 +284,22 @@ needed to trigger automatic refresh before calling `package-install'."
 
 (defun my/fit-frame-to-monitor (&optional frame)
   "Resize and center FRAME so it fits entirely within its monitor's work area."
-  (let* ((frame (or frame (selected-frame)))
-	 (workarea (alist-get 'workarea (frame-monitor-attributes frame)))
-	 (mon-x (nth 0 workarea))
-	 (mon-y (nth 1 workarea))
-	 (mon-width (nth 2 workarea))
-	 (mon-height (nth 3 workarea))
-	 ;; Leave a margin so the frame doesn't touch the screen edges
-	 (target-width (round (* mon-width 0.65)))
-	 (target-height (round (* mon-height 0.65))))
-    (set-frame-size frame target-width target-height t)
-    (set-frame-position frame
-			(+ mon-x (/ (- mon-width target-width) 2))
-			(+ mon-y (/ (- mon-height target-height) 2)))))
+  (let ((frame (or frame (selected-frame))))
+    ;; Terminal frames have no meaningful work area
+    (when (display-graphic-p frame)
+      (my/safely "fit frame to monitor"
+	(let* ((workarea (alist-get 'workarea (frame-monitor-attributes frame)))
+	       (mon-x (nth 0 workarea))
+	       (mon-y (nth 1 workarea))
+	       (mon-width (nth 2 workarea))
+	       (mon-height (nth 3 workarea))
+	       ;; Leave a margin so the frame doesn't touch the screen edges
+	       (target-width (round (* mon-width 0.65)))
+	       (target-height (round (* mon-height 0.65))))
+	  (set-frame-size frame target-width target-height t)
+	  (set-frame-position frame
+			      (+ mon-x (/ (- mon-width target-width) 2))
+			      (+ mon-y (/ (- mon-height target-height) 2))))))))
 
 (add-hook 'after-make-frame-functions #'my/fit-frame-to-monitor)
 (add-hook 'window-setup-hook #'my/fit-frame-to-monitor)
@@ -282,15 +322,15 @@ needed to trigger automatic refresh before calling `package-install'."
 	 (prog-mode . flyspell-prog-mode))
   :bind ("C-c s" . flyspell-check-previous-highlighted-word)
   :config
-  (setq ispell-program-name "hunspell"
-	ispell-dictionary "sv_SE,en_US")
-  ;; ispell-set-spellchecker-params has to be called
-  ;; before ispell-hunspell-add-multi-dic will work
-  (ispell-set-spellchecker-params)
   ;; On a fresh machine (e.g. Windows, before hunspell + dictionaries
   ;; are installed and DICPATH is set) this would otherwise error on
   ;; every startup, so fail quietly instead.
-  (ignore-errors
+  (my/safely "ispell"
+    (setq ispell-program-name "hunspell"
+	  ispell-dictionary "sv_SE,en_US")
+    ;; ispell-set-spellchecker-params has to be called
+    ;; before ispell-hunspell-add-multi-dic will work
+    (ispell-set-spellchecker-params)
     (ispell-hunspell-add-multi-dic "sv_SE,en_US")))
 
 (setq rectangle-preview t)
@@ -340,9 +380,10 @@ needed to trigger automatic refresh before calling `package-install'."
 (keymap-global-set "M-s f" 'find-name-dired)
 
 ;; Use vim-like word navigation
-(require 'viper-cmd)
-(global-set-key (kbd "M-f") 'viper-forward-word)
-(global-set-key (kbd "M-b") 'viper-backward-word)
+(my/safely "viper word navigation"
+  (require 'viper-cmd)
+  (global-set-key (kbd "M-f") 'viper-forward-word)
+  (global-set-key (kbd "M-b") 'viper-backward-word))
 
 (keymap-global-set "M-o" 'other-window)
 
@@ -397,13 +438,16 @@ needed to trigger automatic refresh before calling `package-install'."
 (use-package rasi-mode)
 
 ;; Markdown
-(if (locate-library "markdown-ts-mode")
-    (progn
-      (require 'markdown-ts-mode)
-      (with-eval-after-load 'markdown-ts-mode
-	(require 'markdown-ts-mode-x))
-      (dolist (pat '("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'"))
-	(add-to-list 'auto-mode-alist (cons pat 'markdown-ts-mode))))
+;; Prefer the built-in tree-sitter mode; if it's missing or its setup
+;; fails, fall back to markdown-mode from MELPA.
+(unless (and (locate-library "markdown-ts-mode")
+	     (my/safely "markdown-ts-mode"
+	       (require 'markdown-ts-mode)
+	       (with-eval-after-load 'markdown-ts-mode
+		 (require 'markdown-ts-mode-x))
+	       (dolist (pat '("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'"))
+		 (add-to-list 'auto-mode-alist (cons pat 'markdown-ts-mode)))
+	       t))
   (use-package markdown-mode))
 
 ;; Generate a table of contents for markdown files
@@ -411,31 +455,37 @@ needed to trigger automatic refresh before calling `package-install'."
 
 ;; Treesitter
 (when (version<= "31.1" emacs-version)
-    (setopt treesit-auto-install-grammar 'always
-	    treesit-enabled-modes t
-	    treesit-language-source-alist
-	    '((yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+  (setopt treesit-auto-install-grammar 'always
+	  treesit-enabled-modes t)
 
-  (dolist (mapping '(("\\.sh\\'"          . bash-ts-mode)
-		     ("\\.c\\'"           . c-ts-mode)
-		     ("\\.h\\'"           . c-ts-mode)
-		     ("\\.cpp\\'"         . c++-ts-mode)
-		     ("\\.cc\\'"          . c++-ts-mode)
-		     ("\\.hpp\\'"         . c++-ts-mode)
-		     ("\\.css\\'"         . css-ts-mode)
-		     ("\\.html?\\'"       . html-ts-mode)
-		     ("\\.java\\'"        . java-ts-mode)
-		     ("\\.[cm]?js\\'"     . js-ts-mode)
-		     ("\\.json\\'"        . json-ts-mode)
-		     ("\\.py[iw]?\\'"     . python-ts-mode)
-		     ("\\.ya?ml\\'"       . yaml-ts-mode)
-		     ("\\.tsx\\'"         . typescript-ts-mode)))
+  (dolist (recipe '((yaml       "https://github.com/ikatyang/tree-sitter-yaml")
+		    (tsx        "https://github.com/tree-sitter/tree-sitter-typescript"
+				"master" "tsx/src")))
+    (add-to-list 'treesit-language-source-alist recipe))
+
+  (dolist (mapping '(("\\.sh\\'"      . bash-ts-mode)
+		     ("\\.c\\'"       . c-ts-mode)
+		     ("\\.h\\'"       . c-ts-mode)
+		     ("\\.cpp\\'"     . c++-ts-mode)
+		     ("\\.cc\\'"      . c++-ts-mode)
+		     ("\\.hpp\\'"     . c++-ts-mode)
+		     ("\\.css\\'"     . css-ts-mode)
+		     ("\\.html?\\'"   . html-ts-mode)
+		     ("\\.java\\'"    . java-ts-mode)
+		     ("\\.[cm]?js\\'" . js-ts-mode)
+		     ("\\.json\\'"    . json-ts-mode)
+		     ("\\.py[iw]?\\'" . python-ts-mode)
+		     ("\\.ya?ml\\'"   . yaml-ts-mode)
+		     ("\\.tsx\\'"     . tsx-ts-mode)))
     (add-to-list 'auto-mode-alist mapping))
 
+  ;; Guard each language separately so that one failed grammar
+  ;; (offline, no C compiler, bad recipe) doesn't skip the rest
   (dolist (lang '(bash c cpp css html java javascript json
-		       python yaml typescript))
+		       python yaml tsx))
     (unless (treesit-language-available-p lang)
-      (treesit-install-language-grammar lang))))
+      (my/safely (format "treesit grammar: %s" lang)
+	(treesit-install-language-grammar lang)))))
 
 ;;; Completions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -630,19 +680,20 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 ;; Set font
 ;; "monospace"/"sans" are fontconfig aliases that only resolve on
 ;; Linux; Windows needs real installed font family names instead.
-(let ((mono-spaced-font
-       (if (eq system-type 'windows-nt) "Cascadia Code" "monospace"))
-      (proportionately-spaced-font
-       (if (eq system-type 'windows-nt) "Segoe UI" "sans")))
-  (set-face-attribute 'default nil
-		      :family mono-spaced-font
-		      :height 115)
-  (set-face-attribute 'fixed-pitch nil
-		      :family mono-spaced-font
-		      :height 1.15)
-  (set-face-attribute 'variable-pitch nil
-		      :family proportionately-spaced-font
-		      :height 1.1))
+(my/safely "fonts"
+  (let ((mono-spaced-font
+	 (if (eq system-type 'windows-nt) "Cascadia Code" "monospace"))
+	(proportionately-spaced-font
+	 (if (eq system-type 'windows-nt) "Segoe UI" "sans")))
+    (set-face-attribute 'default nil
+			:family mono-spaced-font
+			:height 115)
+    (set-face-attribute 'fixed-pitch nil
+			:family mono-spaced-font
+			:height 1.15)
+    (set-face-attribute 'variable-pitch nil
+			:family proportionately-spaced-font
+			:height 1.1)))
 
 (defun my/disable-all-themes ()
   "Disable all active themes."
@@ -662,11 +713,17 @@ own selection behavior (`thrifty' deliberately doesn't select)."
   (customize-save-variable 'my-chosen-theme theme))
 
 ;; Remember last used theme between sessions,
-;; default to modus-operandi-tinted
+;; default to modus-operandi-tinted.
+;; If the saved theme can't be loaded (e.g. its package was removed),
+;; fall back to the default instead of aborting startup.
 (defun my/restore-or-default-theme ()
   (unless (boundp 'my-chosen-theme)
     (setq my-chosen-theme "modus-operandi-tinted"))
-  (my/enable-theme my-chosen-theme))
+  (unless (my/safely "saved theme"
+	    (my/enable-theme my-chosen-theme)
+	    t)
+    (my/safely "fallback theme"
+      (my/enable-theme "modus-operandi-tinted"))))
 
 (add-hook 'after-init-hook #'my/restore-or-default-theme)
 
@@ -682,7 +739,8 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 	     hs-minor-mode))
 
 (with-eval-after-load 'subword
-  (diminish 'subword-mode))
+  (my/safely "diminish subword"
+    (diminish 'subword-mode)))
 
 ;; Show full path to file in header line
 (defun my/set-header-line-for-files-only ()
@@ -735,7 +793,7 @@ own selection behavior (`thrifty' deliberately doesn't select)."
   ;; can set `my/work-org-directory' to point somewhere else on a
   ;; given machine, e.g. a work-only notes folder.
   (setq org-directory (or (bound-and-true-p my/work-org-directory)
-			   "~/notes/org")
+			  "~/notes/org")
 	org-archive-location (concat org-directory "/arkiv.org::")
 	org-todo-keywords '((sequence "TODO" "|" "DONE"))
 	org-M-RET-may-split-line '((default . nil))
@@ -743,18 +801,21 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 	org-log-done 'time
 	org-log-into-drawer t)
 
-  (load "sv-kalender")
+  ;; No `noerror' on this one, so a missing file would otherwise
+  ;; abort the rest of the org config
+  (my/safely "sv-kalender"
+    (load "sv-kalender"))
 
   ;; Refile settings
   (setq org-default-notes-file
 	(concat org-directory "/omarkiv.org")
 	org-refile-targets
-	'(("todo.org"		:maxlevel . 2)
-	  ("rep.org"		:maxlevel . 1)
-	  ("arkiv.org"		:level    . 0)
-	  ("media_arkiv.org"	:maxlevel . 1)
-	  ("varia.org"		:maxlevel . 1)
-	  ("kalender.org"	:level    . 0))
+	'(("todo.org"           :maxlevel . 2)
+	  ("rep.org"            :maxlevel . 1)
+	  ("arkiv.org"          :level    . 0)
+	  ("media_arkiv.org"    :maxlevel . 1)
+	  ("varia.org"          :maxlevel . 1)
+	  ("kalender.org"       :level    . 0))
 	org-refile-use-outline-path 'file
 	org-outline-path-complete-in-steps nil)
 
@@ -817,10 +878,13 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 	org-agenda-skip-deadline-if-done t
 	org-agenda-skip-scheduled-if-done t
 	org-agenda-todo-list-sublevels t
+	;; directory-files errors if the directory doesn't exist
+	;; (e.g. on a fresh machine)
 	org-agenda-files
-	(seq-remove
-	 (lambda (f) (string= (file-name-nondirectory f) "arkiv.org"))
-	 (directory-files org-directory t "\\.org\\'"))
+	(when (file-directory-p org-directory)
+	  (seq-remove
+	   (lambda (f) (string= (file-name-nondirectory f) "arkiv.org"))
+	   (directory-files org-directory t "\\.org\\'")))
 
 	;; Time grid settings
 	org-agenda-time-grid
