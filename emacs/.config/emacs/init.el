@@ -1000,20 +1000,29 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 
 (use-package dired
   :ensure nil
-  :hook (dired-mode . dired-hide-details-mode)
+  :hook ((dired-mode . dired-hide-details-mode)
+	 (dired-mode . my/dired-restore-text-scale))
   :bind
   (:map dired-mode-map
 	("b" . dired-up-directory))
   :custom
-  ;; Show in long listing format,
-  ;; show hidden files,
-  ;; show sizes in human-readable format
-  ;; sort directories first,
-  ;; use natural sort for version numbers within text
   (dired-listing-switches
    "-lAhv --group-directories-first")
-  ;; No infinite dired buffers!
-  (dired-kill-when-opening-new-dired-buffer t))
+  (dired-kill-when-opening-new-dired-buffer t)
+  :config
+  (defvar my/dired-text-scale 0
+    "Text scale amount shared across Dired buffers.")
+
+  (defun my/dired-save-text-scale ()
+    "Remember the current text scale when changed in a Dired buffer."
+    (when (derived-mode-p 'dired-mode)
+      (setq my/dired-text-scale text-scale-mode-amount)))
+
+  (defun my/dired-restore-text-scale ()
+    "Apply the remembered text scale to a new Dired buffer."
+    (text-scale-set my/dired-text-scale))
+
+  (add-hook 'text-scale-mode-hook #'my/dired-save-text-scale))
 
 (use-package dired-open)
 
