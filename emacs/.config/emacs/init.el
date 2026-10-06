@@ -789,6 +789,16 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 
 (use-package modus-themes)
 
+;; Enable hl-line-mode in file buffers,
+;; but exclude certain unwanted modes
+(defun my/maybe-enable-hl-line ()
+  (when (and buffer-file-name
+	     (not (derived-mode-p 'image-mode 'pdf-view-mode 'doc-view-mode)))
+    (hl-line-mode 1)))
+
+(add-hook 'find-file-hook #'my/maybe-enable-hl-line)
+(add-hook 'after-save-hook #'my/maybe-enable-hl-line)
+
 ;;; Org Mode
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
