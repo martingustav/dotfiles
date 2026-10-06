@@ -331,7 +331,7 @@ needed to trigger automatic refresh before calling `package-install'."
   :ensure nil
   :hook ((text-mode . flyspell-mode)
 	 (prog-mode . flyspell-prog-mode))
-  :bind ("C-c s" . flyspell-check-previous-highlighted-word)
+  :bind* ("C-c s" . flyspell-check-previous-highlighted-word)
   :config
   ;; On a fresh machine (e.g. Windows, before hunspell + dictionaries
   ;; are installed and DICPATH is set) this would otherwise error on
