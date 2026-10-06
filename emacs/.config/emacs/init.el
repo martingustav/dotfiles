@@ -221,7 +221,9 @@ needed to trigger automatic refresh before calling `package-install'."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Map yes and no to y and n
-(fset 'yes-or-no-p 'y-or-n-p)
+(if (boundp 'use-short-answers)
+    (setq use-short-answers t)
+  (defalias 'yes-or-no-p 'y-or-n-p))
 
 ;; Disable visual and audible bell
 (setq ring-bell-function 'ignore)
