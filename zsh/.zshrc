@@ -130,4 +130,5 @@ alias dnf-up="sudo dnf upgrade -y"
 alias fp-up="flatpak update -y"
 alias all-up="sudo dnf upgrade -y && flatpak update -y"
 
-export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+# Remember SSH key password
+eval $(keychain --eval --quiet)
