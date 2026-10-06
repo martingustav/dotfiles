@@ -428,6 +428,22 @@ needed to trigger automatic refresh before calling `package-install'."
 		       (show-paren-mode)
 		       (electric-pair-mode))))
 
+;; Enable markdown and org delimiters strictly in their respective modes
+(defun my-setup-markup-pairs ()
+  (setq-local electric-pair-pairs (append '(
+					    (?* . ?*)
+					    (?/ . ?/)
+					    (?= . ?=)
+					    (?~ . ?~)
+					    (?_ . ?_)
+					    (?` . ?`)
+					    )
+					  electric-pair-pairs))
+  (setq-local electric-pair-text-pairs electric-pair-pairs))
+
+(add-hook 'org-mode-hook #'my-setup-markup-pairs)
+(add-hook 'markdown-mode-hook #'my-setup-markup-pairs)
+
 ;; Git interface
 (use-package magit
   :custom
