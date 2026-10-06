@@ -306,6 +306,15 @@ needed to trigger automatic refresh before calling `package-install'."
 (add-hook 'after-make-frame-functions #'my/fit-frame-to-monitor)
 (add-hook 'window-setup-hook #'my/fit-frame-to-monitor)
 
+(when (eq system-type 'windows-nt)
+  (let ((gnu-bin "C:/Program Files/Git/usr/bin"))
+    (add-to-list 'exec-path gnu-bin)
+    (setenv "PATH" (concat gnu-bin ";" (getenv "PATH")))))
+
+(use-package ripgrep
+  :config
+  (setq xref-search-program 'ripgrep))
+
 ;;; Text
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
