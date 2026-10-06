@@ -428,11 +428,11 @@ needed to trigger automatic refresh before calling `package-install'."
   ("C-c g" . magit-status))
 
 ;; Show Git diff in margin
-(use-package git-gutter
-  :diminish
-  :defer nil
-  :config
-  (global-git-gutter-mode))
+(use-package diff-hl
+  :init
+  (diff-hl-margin-mode)
+  (global-diff-hl-mode)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
 ;; Common File Types
 (use-package csv-mode)
