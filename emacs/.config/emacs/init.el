@@ -311,10 +311,6 @@ needed to trigger automatic refresh before calling `package-install'."
     (add-to-list 'exec-path gnu-bin)
     (setenv "PATH" (concat gnu-bin ";" (getenv "PATH")))))
 
-(use-package ripgrep
-  :config
-  (setq xref-search-program 'ripgrep))
-
 ;;; Text
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
