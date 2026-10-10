@@ -296,7 +296,7 @@ needed to trigger automatic refresh before calling `package-install'."
 	       (mon-width (nth 2 workarea))
 	       (mon-height (nth 3 workarea))
 	       ;; Leave a margin so the frame doesn't touch the screen edges
-	       (target-width (round (* mon-width 0.65)))
+	       (target-width (round (* mon-width 0.50)))
 	       (target-height (round (* mon-height 0.65))))
 	  (set-frame-size frame target-width target-height t)
 	  (set-frame-position frame
