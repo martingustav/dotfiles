@@ -637,7 +637,7 @@ needed to trigger automatic refresh before calling `package-install'."
 (global-set-key (kbd "C-x 3") 'my/split-and-follow-vertically)
 
 ;; Don't open a new window for ediff
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+(setq ediff-window-setup-function #'ediff-setup-windows-plain)
 
 ;; Reuse man page windows
 (setq Man-notify-method 'thrifty)
