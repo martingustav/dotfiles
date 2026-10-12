@@ -324,6 +324,7 @@ needed to trigger automatic refresh before calling `package-install'."
 
 ;; Spell checking
 (use-package ispell
+  :defer t
   :ensure nil
   :hook ((text-mode . flyspell-mode)
 	 (prog-mode . flyspell-prog-mode))
@@ -404,10 +405,23 @@ needed to trigger automatic refresh before calling `package-install'."
 
 ;; Keyboard-invoked menus
 (use-package casual
-  :config
-  (casual-init)
-  (setq casual-keybinding-primary "C-c o"
-	casual-keybinding-secondary "C-c m"))
+  :defer t
+  :init
+  (setq casual-keybinding-secondary "C-c m")
+  (with-eval-after-load 'dired
+    (keymap-set dired-mode-map "C-o" #'casual-dired-tmenu))
+  (with-eval-after-load 'calc
+    (keymap-set calc-mode-map "C-o" #'casual-calc-tmenu))
+  (with-eval-after-load 'isearch
+    (keymap-set isearch-mode-map "C-o" #'casual-isearch-tmenu))
+  ;; ediff-mode-map is nil until an ediff session builds it
+  (add-hook 'ediff-keymap-setup-hook
+	    (lambda ()
+	      (keymap-set ediff-mode-map "C-o" #'casual-ediff-tmenu)))
+  ;; Only where man actually exists
+  (when (executable-find "man")
+    (with-eval-after-load 'man
+      (keymap-set Man-mode-map "C-o" #'casual-man-tmenu))))
 
 (add-hook 'outline-minor-mode-hook
 	  (lambda ()
@@ -442,11 +456,12 @@ needed to trigger automatic refresh before calling `package-install'."
 
 ;; Git interface
 (use-package magit
+  :defer t
   :custom
   (magit-display-buffer-function
    #'magit-display-buffer-same-window-except-diff-v1)
   :bind
-  ("C-c g" . magit-status))
+  ("C-x g" . magit-status))
 
 ;; Show Git diff in margin
 (use-package diff-hl
@@ -561,6 +576,7 @@ needed to trigger automatic refresh before calling `package-install'."
 
 ;; More detailed help buffers
 (use-package helpful
+  :defer t
   :bind (:map helpful-mode-map
 	      ("q" . (lambda ()
 		       (interactive)
@@ -986,6 +1002,7 @@ own selection behavior (`thrifty' deliberately doesn't select)."
     (org-contacts-files (list (expand-file-name "kontakter.org" org-directory)))))
 
 (use-package org-wild-notifier
+  :defer 15
   :config
   (org-wild-notifier-mode)
   (setq org-wild-notifier-day-wide-alert-times
