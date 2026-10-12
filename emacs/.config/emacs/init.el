@@ -123,6 +123,14 @@
 	("gnu-devel"    . "https://elpa.gnu.org/devel/")
 	("nongnu-devel" . "https://elpa.nongnu.org/nongnu-devel/")))
 
+(when (eq system-type 'windows-nt)
+  ;; Use a native Windows gpg (Gpg4win) if one is installed, instead of
+  ;; the MSYS/Git gpg that mangles c:/ paths.
+  (when-let* ((gpg (seq-find #'file-executable-p
+			    '("C:/Program Files/GnuPG/bin/gpg.exe"
+			      "C:/Program Files (x86)/GnuPG/bin/gpg.exe"))))
+    (setq epg-gpg-program gpg)))
+
 ;; Initialize the package manager
 (my/safely "package-initialize"
   (package-initialize))
