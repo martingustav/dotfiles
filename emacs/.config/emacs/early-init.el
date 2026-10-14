@@ -1,6 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 
-;; Increase garbace collection threshold temporarily
+;; Increase garbage collection threshold temporarily
 (setq gc-cons-threshold 100000000)
 
 ;; Prevent Emacs from initializing package manager,
