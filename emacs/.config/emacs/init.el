@@ -332,22 +332,29 @@ needed to trigger automatic refresh before calling `package-install'."
 
 ;; Spell checking
 (use-package ispell
-  :defer t
+  :ensure nil
+  :custom
+  (ispell-program-name "hunspell")
+  (ispell-dictionary "sv_SE,en_US")
+  :config
+  (my/safely "ispell"
+    (ispell-set-spellchecker-params)
+    (ispell-hunspell-add-multi-dic "sv_SE,en_US")))
+
+(use-package flyspell
   :ensure nil
   :hook ((text-mode . flyspell-mode)
 	 (prog-mode . flyspell-prog-mode))
-  :bind* ("C-c s" . flyspell-check-previous-highlighted-word)
-  :config
-  ;; On a fresh machine (e.g. Windows, before hunspell + dictionaries
-  ;; are installed and DICPATH is set) this would otherwise error on
-  ;; every startup, so fail quietly instead.
-  (my/safely "ispell"
-    (setq ispell-program-name "hunspell"
-	  ispell-dictionary "sv_SE,en_US")
-    ;; ispell-set-spellchecker-params has to be called
-    ;; before ispell-hunspell-add-multi-dic will work
-    (ispell-set-spellchecker-params)
-    (ispell-hunspell-add-multi-dic "sv_SE,en_US")))
+  :bind* ("C-c s" . flyspell-check-previous-highlighted-word))
+
+(defun my/spell-check-buffer ()
+  "Run the appropriate interactive spell check for the current buffer."
+  (interactive)
+  (if (derived-mode-p 'prog-mode)
+      (ispell-comments-and-strings)
+      (ispell-buffer)))
+
+(keymap-global-set "C-c S" #'my/spell-check-buffer)
 
 (setq rectangle-preview t)
 
