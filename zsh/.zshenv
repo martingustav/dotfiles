@@ -28,6 +28,6 @@ export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
 
 # fzf default options
 export FZF_DEFAULT_OPTS="--color 16 --layout=reverse --height 30% --preview='bat -p --color=always {}'"
-export FZF_CTRL_R_OPTS="--color 16 --layout=reverse --preview \'echo {}\' --preview-window down:3:wrap"
+export FZF_CTRL_R_OPTS="--color 16 --layout=reverse --preview 'echo {}' --preview-window down:3:wrap"
 
 export KEYCHAIN_DONE=1
