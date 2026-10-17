@@ -138,10 +138,10 @@
 (setq use-package-always-ensure t
       use-package-verbose t)
 
-;; Defer packages when not launched in daemon mode
 (eval-when-compile
   (require 'use-package))
 
+;; Defer packages when not launched in daemon mode
 (setq use-package-always-defer (not (daemonp))
       use-package-always-demand (daemonp))
 
@@ -248,7 +248,6 @@ needed to trigger automatic refresh before calling `package-install'."
 ;; Ensure new frames are focused
 (defun my/focus-new-client-frame ()
   (select-frame-set-input-focus (selected-frame)))
-
 (add-hook 'server-after-make-frame-hook #'my/focus-new-client-frame)
 
 (use-package isearch
