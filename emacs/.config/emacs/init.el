@@ -490,6 +490,19 @@ needed to trigger automatic refresh before calling `package-install'."
       (my/safely (format "treesit grammar: %s" lang)
 	(treesit-install-language-grammar lang)))))
 
+(use-package eglot
+  :ensure t
+  :hook ((python-ts-mode . eglot-ensure)
+	 (java-ts-mode . eglot-ensure)
+	 (bash-ts-mode . eglot-ensure)
+	 (sh-mode . eglot-ensure))
+  :config
+  (add-to-list 'eglot-server-programs
+	       '((sh-mode bash-ts-mode) . ("bash-language-server" "start")))
+
+  (add-to-list 'eglot-server-programs
+	       '(python-ts-mode . ("pylsp"))))
+
 ;;; Completions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
