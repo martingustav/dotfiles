@@ -401,23 +401,8 @@ needed to trigger automatic refresh before calling `package-install'."
 
 ;; Keyboard-invoked menus
 (use-package casual
-  :defer t
   :init
-  (setq casual-keybinding-secondary "C-c m")
-  (with-eval-after-load 'dired
-    (keymap-set dired-mode-map "C-o" #'casual-dired-tmenu))
-  (with-eval-after-load 'calc
-    (keymap-set calc-mode-map "C-o" #'casual-calc-tmenu))
-  (with-eval-after-load 'isearch
-    (keymap-set isearch-mode-map "C-o" #'casual-isearch-tmenu))
-  ;; ediff-mode-map is nil until an ediff session builds it
-  (add-hook 'ediff-keymap-setup-hook
-	    (lambda ()
-	      (keymap-set ediff-mode-map "C-o" #'casual-ediff-tmenu)))
-  ;; Only where man actually exists
-  (when (executable-find "man")
-    (with-eval-after-load 'man
-      (keymap-set Man-mode-map "C-o" #'casual-man-tmenu))))
+  (casual-init))
 
 (add-hook 'outline-minor-mode-hook
 	  (lambda ()
