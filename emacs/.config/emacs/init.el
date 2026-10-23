@@ -974,6 +974,8 @@ own selection behavior (`thrifty' deliberately doesn't select)."
   (beginning-of-buffer)
   (org-next-visible-heading 1))
 
+(use-package org-web-tools)
+
 ;;; Misc
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
