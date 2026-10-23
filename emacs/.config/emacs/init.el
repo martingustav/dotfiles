@@ -273,28 +273,6 @@ needed to trigger automatic refresh before calling `package-install'."
       scroll-conservatively 10                     ; Scroll smoothly near borders
       scroll-margin 5)                             ; Keep lines visible at edges
 
-(defun my/fit-frame-to-monitor (&optional frame)
-  "Resize and center FRAME so it fits entirely within its monitor's work area."
-  (let ((frame (or frame (selected-frame))))
-    ;; Terminal frames have no meaningful work area
-    (when (display-graphic-p frame)
-      (my/safely "fit frame to monitor"
-	(let* ((workarea (alist-get 'workarea (frame-monitor-attributes frame)))
-	       (mon-x (nth 0 workarea))
-	       (mon-y (nth 1 workarea))
-	       (mon-width (nth 2 workarea))
-	       (mon-height (nth 3 workarea))
-	       ;; Leave a margin so the frame doesn't touch the screen edges
-	       (target-width (round (* mon-width 0.50)))
-	       (target-height (round (* mon-height 0.65))))
-	  (set-frame-size frame target-width target-height t)
-	  (set-frame-position frame
-			      (+ mon-x (/ (- mon-width target-width) 2))
-			      (+ mon-y (/ (- mon-height target-height) 2))))))))
-
-(add-hook 'after-make-frame-functions #'my/fit-frame-to-monitor)
-(add-hook 'window-setup-hook #'my/fit-frame-to-monitor)
-
 (when (eq system-type 'windows-nt)
   (let ((gnu-bin "C:/Program Files/Git/usr/bin"))
     (add-to-list 'exec-path gnu-bin)
