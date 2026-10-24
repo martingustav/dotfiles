@@ -225,6 +225,10 @@ needed to trigger automatic refresh before calling `package-install'."
       (message "Clipetty link: %s" url)
       (clipetty--emit (clipetty--osc url t)))))
 
+(use-package auto-sudoedit
+  :config
+  (auto-sudoedit-mode))
+
 ;;; General Behavior
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
