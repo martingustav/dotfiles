@@ -226,6 +226,7 @@ needed to trigger automatic refresh before calling `package-install'."
       (clipetty--emit (clipetty--osc url t)))))
 
 (use-package auto-sudoedit
+  :diminish
   :config
   (auto-sudoedit-mode))
 
