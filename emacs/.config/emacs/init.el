@@ -283,6 +283,8 @@ needed to trigger automatic refresh before calling `package-install'."
     (add-to-list 'exec-path gnu-bin)
     (setenv "PATH" (concat gnu-bin ";" (getenv "PATH")))))
 
+(use-package rg)
+
 ;;; Text
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -363,7 +365,7 @@ needed to trigger automatic refresh before calling `package-install'."
 (keymap-global-set "M-g r" 'recentf)
 
 (keymap-global-set "M-s g" 'grep)
-(keymap-global-set "M-s r" 'rgrep)
+(keymap-global-set "M-s r" 'rg)
 (keymap-global-set "M-s f" 'find-name-dired)
 
 ;; Use vim-like word navigation
