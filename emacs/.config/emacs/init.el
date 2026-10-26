@@ -129,7 +129,8 @@
   (when-let* ((gpg (seq-find #'file-executable-p
 			    '("C:/Program Files/GnuPG/bin/gpg.exe"
 			      "C:/Program Files (x86)/GnuPG/bin/gpg.exe"))))
-    (setq epg-gpg-program gpg)))
+    (setq epg-gpg-program gpg)
+    (setq package-gnupg-program gpg)))
 
 ;; Initialize the package manager
 (my/safely "package-initialize"
