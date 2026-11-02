@@ -372,8 +372,8 @@ needed to trigger automatic refresh before calling `package-install'."
 ;; Use vim-like word navigation
 (my/safely "viper word navigation"
   (require 'viper-cmd)
-  (global-set-key (kbd "M-f") 'viper-forward-word)
-  (global-set-key (kbd "M-b") 'viper-backward-word))
+  (global-set-key (kbd "M-F") 'viper-forward-word)
+  (global-set-key (kbd "M-B") 'viper-backward-word))
 
 (keymap-global-set "M-o" 'other-window)
 
