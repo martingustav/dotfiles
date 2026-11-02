@@ -686,9 +686,28 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 ;; Linux; Windows needs real installed font family names instead.
 (my/safely "fonts"
   (let ((mono-spaced-font
-	 (if (eq system-type 'windows-nt) "Cascadia Code" "monospace"))
+	 (cond
+	  ;; Windows: Try Noto Sans Mono first, then Cascadia Code
+	  ((eq system-type 'windows-nt)
+	   (cond
+	    ((find-font (font-spec :name "Noto Sans Mono")) "Noto Sans Mono")
+	    ((find-font (font-spec :name "Cascadia Code")) "Cascadia Code")
+	    (t "Courier New"))) ;; Absolute safety fallback for Windows
+	  ;; Other platforms (Linux/macOS)
+	  (t "monospace")))
+
 	(proportionately-spaced-font
-	 (if (eq system-type 'windows-nt) "Segoe UI" "sans")))
+	 (cond
+	  ;; Windows: Try Noto Sans first, then Segoe UI
+	  ((eq system-type 'windows-nt)
+	   (cond
+	    ((find-font (font-spec :name "Noto Sans")) "Noto Sans")
+	    ((find-font (font-spec :name "Segoe UI")) "Segoe UI")
+	    (t "Arial"))) ;; Absolute safety fallback for Windows
+	  ;; Other platforms (Linux/macOS)
+	  (t "sans"))))
+
+    ;; Face configurations
     (set-face-attribute 'default nil
 			:family mono-spaced-font
 			:height 115)
