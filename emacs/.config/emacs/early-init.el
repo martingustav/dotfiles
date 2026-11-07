@@ -20,12 +20,7 @@
 (tool-bar-mode -1)
 (blink-cursor-mode -1)
 (setq visible-cursor nil)
-
-;; Hide scroll bar in minibuffer
-(add-hook 'after-make-frame-functions
-	  (lambda (frame)
-	    (set-window-scroll-bars
-	     (minibuffer-window frame) 0 nil 0 nil t)))
+(scroll-bar-mode -1)
 
 ;; Don't show unnecessary warnings
 (setq warning-minimum-level :error

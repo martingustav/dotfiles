@@ -811,6 +811,10 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 (add-hook 'find-file-hook #'my/maybe-enable-hl-line)
 (add-hook 'after-save-hook #'my/maybe-enable-hl-line)
 
+(use-package yascroll
+  :config
+  (global-yascroll-bar-mode 1))
+
 ;;; Org Mode
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
