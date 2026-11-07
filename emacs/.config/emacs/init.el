@@ -231,6 +231,11 @@ needed to trigger automatic refresh before calling `package-install'."
   :config
   (auto-sudoedit-mode))
 
+;; Add Info files to Emacs
+(dolist (path '("/usr/local/share/info"
+		"/usr/share/info"))
+  (add-to-list 'Info-directory-list path))
+
 ;;; General Behavior
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
