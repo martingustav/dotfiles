@@ -31,3 +31,6 @@ export FZF_DEFAULT_OPTS="--color 16 --layout=reverse --height 30% --preview='bat
 export FZF_CTRL_R_OPTS="--color 16 --layout=reverse --preview 'echo {}' --preview-window down:3:wrap"
 
 export KEYCHAIN_DONE=1
+
+# Info files
+export INFOPATH="/usr/local/share/info:/usr/share/info"
