@@ -982,10 +982,7 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 	 "* %?\n%i\n")
 
 	("e" "Calendar event" entry (file "kalender.org")
-	 "* %?\n%^t"))
-      (unless (bound-and-true-p my/disable-org-contacts)
-	'(("c" "Contact" entry (file "kontakter.org")
-	   "* %? \n:PROPERTIES:\n:PHONE: %^{Phone number}\n:END:")))))))
+	 "* %?\n%^t"))))))
 
 (unless (bound-and-true-p my/disable-org-contacts)
   (use-package org-contacts
