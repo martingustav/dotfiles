@@ -710,39 +710,40 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 ;; Set font
 ;; "monospace"/"sans" are fontconfig aliases that only resolve on
 ;; Linux; Windows needs real installed font family names instead.
-(my/safely "fonts"
-  (let ((mono-spaced-font
-	 (cond
-	  ;; Windows: Try Noto Sans Mono first, then Cascadia Code
-	  ((eq system-type 'windows-nt)
-	   (cond
-	    ((find-font (font-spec :name "Noto Sans Mono")) "Noto Sans Mono")
-	    ((find-font (font-spec :name "Cascadia Code")) "Cascadia Code")
-	    (t "Courier New"))) ;; Absolute safety fallback for Windows
-	  ;; Other platforms (Linux/macOS)
-	  (t "monospace")))
+;; Under the daemon, init runs with no GUI frame, so `find-font' fails;
+;; defer until a graphical frame exists.
+(defun my/setup-fonts ()
+  "Set default, fixed-pitch and variable-pitch fonts."
+  (when (display-graphic-p)
+    (my/safely "fonts"
+      (let ((mono-spaced-font
+	     (cond
+	      ((eq system-type 'windows-nt)
+	       (cond
+		((find-font (font-spec :name "Noto Sans Mono")) "Noto Sans Mono")
+		((find-font (font-spec :name "Cascadia Code")) "Cascadia Code")
+		(t "Courier New")))
+	      (t "monospace")))
+	    (proportionately-spaced-font
+	     (cond
+	      ((eq system-type 'windows-nt)
+	       (cond
+		((find-font (font-spec :name "Noto Sans")) "Noto Sans")
+		((find-font (font-spec :name "Segoe UI")) "Segoe UI")
+		(t "Arial")))
+	      (t "sans"))))
+	(set-face-attribute 'default nil
+			    :family mono-spaced-font :height 115)
+	(set-face-attribute 'fixed-pitch nil
+			    :family mono-spaced-font :height 1.15)
+	(set-face-attribute 'variable-pitch nil
+			    :family proportionately-spaced-font :height 1.1)))
+    ;; Only needs to run once per daemon session
+    (remove-hook 'server-after-make-frame-hook #'my/setup-fonts)))
 
-	(proportionately-spaced-font
-	 (cond
-	  ;; Windows: Try Noto Sans first, then Segoe UI
-	  ((eq system-type 'windows-nt)
-	   (cond
-	    ((find-font (font-spec :name "Noto Sans")) "Noto Sans")
-	    ((find-font (font-spec :name "Segoe UI")) "Segoe UI")
-	    (t "Arial"))) ;; Absolute safety fallback for Windows
-	  ;; Other platforms (Linux/macOS)
-	  (t "sans"))))
-
-    ;; Face configurations
-    (set-face-attribute 'default nil
-			:family mono-spaced-font
-			:height 115)
-    (set-face-attribute 'fixed-pitch nil
-			:family mono-spaced-font
-			:height 1.15)
-    (set-face-attribute 'variable-pitch nil
-			:family proportionately-spaced-font
-			:height 1.1)))
+(if (daemonp)
+    (add-hook 'server-after-make-frame-hook #'my/setup-fonts)
+  (my/setup-fonts))
 
 (defun my/disable-all-themes ()
   "Disable all active themes."
