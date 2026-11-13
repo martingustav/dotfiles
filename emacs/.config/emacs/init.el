@@ -871,15 +871,17 @@ own selection behavior (`thrifty' deliberately doesn't select)."
     (load "sv-kalender"))
 
   ;; Refile settings
+  ;; local.el can set `my/org-refile-targets' to override the defaults.
   (setq org-default-notes-file
 	(concat org-directory "/omarkiv.org")
 	org-refile-targets
-	'(("todo.org"           :maxlevel . 2)
-	  ("rep.org"            :maxlevel . 1)
-	  ("arkiv.org"          :level    . 0)
-	  ("media_arkiv.org"    :maxlevel . 1)
-	  ("varia.org"          :maxlevel . 1)
-	  ("kalender.org"       :level    . 0))
+	(or (bound-and-true-p my/org-refile-targets)
+	    '(("todo.org"           :maxlevel . 2)
+	      ("rep.org"            :maxlevel . 1)
+	      ("arkiv.org"          :level    . 0)
+	      ("media_arkiv.org"    :maxlevel . 1)
+	      ("varia.org"          :maxlevel . 1)
+	      ("kalender.org"       :level    . 0)))
 	org-refile-use-outline-path 'file
 	org-outline-path-complete-in-steps nil)
 
