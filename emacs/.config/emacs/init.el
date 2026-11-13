@@ -832,6 +832,11 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 
 (use-package modus-themes)
 
+(use-package foxglove-themes
+  ;; NOTE: vc is only built into use-package starting emacs 30, so eariler
+  ;; versions will have to use a different method.
+  :vc (:url "https://gitlab.com/vegasharmon/foxglove-themes" :rev :newest))
+
 ;; Enable hl-line-mode in file buffers,
 ;; but exclude certain unwanted modes
 (defun my/maybe-enable-hl-line ()
