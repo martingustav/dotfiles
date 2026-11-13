@@ -1,4 +1,4 @@
-;;;; Run commands in a popup frame
+;;;; Run commands in a popup frame  -*- lexical-binding: t; -*-
 
 (defun prot-window-delete-popup-frame (&rest _)
   "Kill selected selected frame if it has parameter `prot-window-popup-frame'.
@@ -45,7 +45,10 @@ Also see `prot-window-delete-popup-frame'." command)
 (declare-function org-capture "org-capture" (&optional goto keys))
 (defvar org-capture-after-finalize-hook)
 
-;;;###autoload (autoload 'prot-window-popup-org-capture "prot-window")
+;;;###autoload (autoload 'prot-window-popup-org-capture "prot-window-popup" nil t)
 (prot-window-define-with-popup-frame org-capture)
 
 (add-hook 'org-capture-after-finalize-hook #'prot-window-delete-popup-frame)
+
+(provide 'prot-window-popup)
+;;; prot-window-popup.el ends here
