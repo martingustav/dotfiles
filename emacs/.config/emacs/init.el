@@ -226,10 +226,14 @@ needed to trigger automatic refresh before calling `package-install'."
       (message "Clipetty link: %s" url)
       (clipetty--emit (clipetty--osc url t)))))
 
-(use-package auto-sudoedit
-  :diminish
-  :config
-  (auto-sudoedit-mode))
+;; Tramp's /sudo:: method assumes a Unix sudo and /bin/sh; on Windows
+;; ownership checks misfire on the user profile dir and sudo.exe rejects
+;; the arguments, so only enable this elsewhere.
+(unless (eq system-type 'windows-nt)
+  (use-package auto-sudoedit
+    :diminish
+    :config
+    (auto-sudoedit-mode)))
 
 ;; Add Info files to Emacs
 (unless (eq system-type 'windows-nt)
