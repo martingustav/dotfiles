@@ -671,26 +671,6 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 (add-to-list 'default-frame-alist '(height . 30))
 (add-to-list 'default-frame-alist '(width . 90))
 
-(defun my/center-frame (&optional frame)
-  "Center FRAME on its monitor's work area, shrinking it if it doesn't fit."
-  (let* ((frame (or frame (selected-frame)))
-	 (wa (frame-monitor-workarea frame)) ; (x y width height), excludes taskbar
-	 (wa-x (nth 0 wa)) (wa-y (nth 1 wa))
-	 (wa-w (nth 2 wa)) (wa-h (nth 3 wa)))
-    (when (display-graphic-p frame)
-      ;; Shrink if taller than the work area (outer height includes title bar)
-      (let ((decor (- (frame-outer-height frame) (frame-text-height frame))))
-	(when (> (frame-outer-height frame) wa-h)
-	  (set-frame-height frame (- wa-h decor) nil t)))
-      (let ((x (+ wa-x (/ (- wa-w (frame-outer-width frame)) 2)))
-	    (y (+ wa-y (/ (- wa-h (frame-outer-height frame)) 2))))
-	(set-frame-position frame (max x wa-x) (max y wa-y))))))
-
-;; Depth 90 = run after other hooks (notably the font setup, which changes frame size)
-(add-hook 'server-after-make-frame-hook #'my/center-frame 90)
-;; Non-daemon startup
-(add-hook 'window-setup-hook #'my/center-frame 90)
-
 ;; Show column number in status bar
 (column-number-mode)
 
