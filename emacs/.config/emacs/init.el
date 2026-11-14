@@ -668,7 +668,7 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Set default frame dimensions
-(add-to-list 'default-frame-alist '(height . 40))
+(add-to-list 'default-frame-alist '(height . 30))
 (add-to-list 'default-frame-alist '(width . 90))
 
 (defun my/center-frame (&optional frame)
