@@ -237,9 +237,10 @@ needed to trigger automatic refresh before calling `package-install'."
 
 ;; Add Info files to Emacs
 (unless (eq system-type 'windows-nt)
-  (dolist (path '("/usr/local/share/info"
-		  "/usr/share/info"))
-    (add-to-list 'Info-directory-list path)))
+  (with-eval-after-load 'info
+    (dolist (path '("/usr/local/share/info"
+		    "/usr/share/info"))
+      (add-to-list 'Info-directory-list path))))
 
 ;;; General Behavior
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
