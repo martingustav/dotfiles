@@ -131,6 +131,8 @@
 (when (version< emacs-version "31.1")
   (add-to-list 'load-path (expand-file-name "user-lisp" user-emacs-directory)))
 
+(setq delete-by-moving-to-trash t)
+
 ;;; Package Management
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
