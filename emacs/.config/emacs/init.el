@@ -445,7 +445,7 @@ needed to trigger automatic refresh before calling `package-install'."
   (magit-display-buffer-function
    #'magit-display-buffer-same-window-except-diff-v1)
   :bind
-  ("C-x g" . magit-status))
+  ("C-c g" . magit-status))
 
 ;; Show Git diff in margin
 (use-package diff-hl
