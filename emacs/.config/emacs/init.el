@@ -871,7 +871,9 @@ own selection behavior (`thrifty' deliberately doesn't select)."
   (setq org-directory (or (bound-and-true-p my/work-org-directory)
 			  "~/notes/org")
 	org-archive-location (concat org-directory "/arkiv.org::")
-	org-todo-keywords '((sequence "TODO" "|" "DONE"))
+	;; local.el can set `my/org-todo-keywords' to override these.
+	org-todo-keywords (or (bound-and-true-p my/org-todo-keywords)
+			      '((sequence "TODO" "|" "DONE")))
 	org-M-RET-may-split-line '((default . nil))
 	org-insert-heading-respect-content t
 	org-log-done 'time
@@ -1005,6 +1007,8 @@ own selection behavior (`thrifty' deliberately doesn't select)."
   ;; my/org-capture-inbox-file lets local.el redirect where Task/Note
   ;; captures land on a given machine (e.g. straight to todo.org
   ;; instead of the personal omarkiv.org inbox).
+  ;; my/org-capture-extra-templates lets local.el add machine-specific
+  ;; templates after the shared ones.
   (org-capture-templates
    (let ((inbox (or (bound-and-true-p my/org-capture-inbox-file) "omarkiv.org")))
      (append
@@ -1018,7 +1022,8 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 	 "* %?\n%i\n")
 
 	("e" "Calendar event" entry (file "kalender.org")
-	 "* %?\n%^t"))))))
+	 "* %?\n%^t"))
+      (bound-and-true-p my/org-capture-extra-templates)))))
 
 (unless (bound-and-true-p my/disable-org-contacts)
   (use-package org-contacts
