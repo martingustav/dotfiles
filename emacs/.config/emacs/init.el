@@ -66,6 +66,26 @@
 
 ;; Remember recently edited files
 (recentf-mode 1)
+;; recentf, savehist and save-place only save on a clean exit
+;; (kill-emacs-hook), which a daemon killed by logout/crash never gets.
+;; Save them every 5 minutes of idle time too, silently.
+(defun my/save-session-state ()
+  "Save recentf list, minibuffer history and file places."
+  (let ((inhibit-message t)
+	(message-log-max nil))
+    (when (bound-and-true-p recentf-mode)
+      (recentf-save-list))
+    (when (bound-and-true-p savehist-mode)
+      (savehist-autosave))
+    (when (bound-and-true-p save-place-mode)
+      (save-place-kill-emacs-hook))))
+
+;; Cancel any previous timer so re-evaluating init.el doesn't stack them.
+(defvar my/save-session-state-timer nil)
+(when (timerp my/save-session-state-timer)
+  (cancel-timer my/save-session-state-timer))
+(setq my/save-session-state-timer
+      (run-with-idle-timer 300 t #'my/save-session-state))
 
 ;;; File Handling
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
