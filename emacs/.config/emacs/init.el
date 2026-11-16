@@ -909,39 +909,7 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 	  (tags   . " %i %-12:c")
 	  (search . " %i %-12:c"))
 	org-ellipsis " ▾"
-	;; Empty line before headings
-	org-blank-before-new-entry
-	'((heading . t)
-	  (plain-list-item . nil))
-	org-startup-folded "content")
-
-  ;; Make only first org heading be bold
-  (custom-set-faces
-   '(org-level-1
-     ((t (:inherit outline-1
-		   :weight bold
-		   :height 1.1))))
-   '(org-level-2
-     ((t (:inherit outline-2
-		   :weight normal))))
-   '(org-level-3
-     ((t (:inherit outline-3
-		   :weight normal))))
-   '(org-level-4
-     ((t (:inherit outline-4
-		   :weight normal))))
-   '(org-level-5
-     ((t (:inherit outline-5
-		   :weight normal))))
-   '(org-level-6
-     ((t (:inherit outline-6
-		   :weight normal))))
-   '(org-level-7
-     ((t (:inherit outline-7
-		   :weight normal))))
-   '(org-level-8
-     ((t (:inherit outline-8
-		   :weight normal))))))
+	org-startup-folded "content"))
 
 ;; Generate a table of contents
 (use-package toc-org
