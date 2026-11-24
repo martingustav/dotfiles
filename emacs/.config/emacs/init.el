@@ -852,7 +852,8 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 
 (use-package yascroll
   :config
-  (global-yascroll-bar-mode 1))
+  (global-yascroll-bar-mode 1)
+  (setq yascroll:delay-to-hide 1.5))
 
 ;;; Org Mode
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
