@@ -887,7 +887,7 @@ own selection behavior (`thrifty' deliberately doesn't select)."
   ;; Refile settings
   ;; local.el can set `my/org-refile-targets' to override the defaults.
   (setq org-default-notes-file
-	(concat org-directory "/omarkiv.org")
+	(concat org-directory "/inkorg.org")
 	org-refile-targets
 	(or (bound-and-true-p my/org-refile-targets)
 	    '(("todo.org"           :maxlevel . 2)
@@ -974,11 +974,11 @@ own selection behavior (`thrifty' deliberately doesn't select)."
   :custom
   ;; my/org-capture-inbox-file lets local.el redirect where Task/Note
   ;; captures land on a given machine (e.g. straight to todo.org
-  ;; instead of the personal omarkiv.org inbox).
+  ;; instead of the personal inkorg.org inbox).
   ;; my/org-capture-extra-templates lets local.el add machine-specific
   ;; templates after the shared ones.
   (org-capture-templates
-   (let ((inbox (or (bound-and-true-p my/org-capture-inbox-file) "omarkiv.org")))
+   (let ((inbox (or (bound-and-true-p my/org-capture-inbox-file) "inkorg.org")))
      (append
       `(("t" "Task" entry (file ,inbox)
 	 "* TODO %?\n%i\n")
@@ -1009,10 +1009,10 @@ own selection behavior (`thrifty' deliberately doesn't select)."
 
 (defun my/org-review-inboxes ()
   (interactive)
-  (find-file (expand-file-name "omarkiv.org" org-directory))
+  (find-file (expand-file-name "inkorg.org" org-directory))
   (delete-other-windows)
   (split-window-right)
-  (find-file-other-window (expand-file-name "mob_omarkiv.org" org-directory))
+  (find-file-other-window (expand-file-name "mob_inkorg.org" org-directory))
   (other-window 1)
   (beginning-of-buffer)
   (org-next-visible-heading 1))
